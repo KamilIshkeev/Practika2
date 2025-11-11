@@ -37,6 +37,7 @@ namespace Practika2.Views
             LoadAnnouncements();
         }
 
+
         private async void LoadTeacherCourses()
         {
             if (_authService.CurrentUser == null) return;
