@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
+        x:Class="Practika2.Views.LoginView"
+        Title="EduTrack - Вход в систему"
+        Width="400" Height="500"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <Grid RowDefinitions="Auto,*" Margin="40">
+        <!-- Логотип и заголовок -->
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,40">
+            <TextBlock Text="📚" FontSize="64" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+            <TextBlock Text="EduTrack" 
+                       FontSize="32" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,8"/>
+            <TextBlock Text="Управление онлайн-обучением" 
+                       FontSize="14" 
+                       Foreground="#546E7A"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+        
+        <!-- Форма входа -->
+        <StackPanel Grid.Row="1" Spacing="16">
+            <TextBox x:Name="UsernameTextBox" 
+                     Watermark="Имя пользователя" 
+                     FontSize="14"
+                     Padding="12,8"/>
+            
+            <TextBox x:Name="PasswordTextBox" 
+                     Watermark="Пароль" 
+                     PasswordChar="•"
+                     FontSize="14"
+                     Padding="12,8"/>
+            
+            <Button x:Name="LoginButton" 
+                    Content="Войти" 
+                    Classes="primary"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0"/>
+            
+            <Button x:Name="RegisterButton" 
+                    Content="Регистрация" 
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0"/>
+            
+            <TextBlock x:Name="ErrorTextBlock" 
+                       Foreground="#E53935" 
+                       TextWrapping="Wrap"
+                       IsVisible="False"
+                       Margin="0,8,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>
+
+
+
+
+
+
+

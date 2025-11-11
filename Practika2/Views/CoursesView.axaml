@@ -1,0 +1,109 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Practika2.Views.CoursesView">
+    
+    <StackPanel Spacing="16">
+        <TextBlock Text="Доступные курсы" 
+                   Classes="heading"
+                   Margin="0,0,0,16"/>
+        
+        <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,16">
+            <ComboBox x:Name="CategoryFilterComboBox" 
+                      Width="200"
+                      SelectedIndex="0">
+                <ComboBoxItem Content="Все категории"/>
+                <ComboBoxItem Content="IT"/>
+                <ComboBoxItem Content="Бизнес"/>
+                <ComboBoxItem Content="Дизайн"/>
+                <ComboBoxItem Content="Маркетинг"/>
+                <ComboBoxItem Content="Языки"/>
+            </ComboBox>
+            
+            <ComboBox x:Name="DifficultyFilterComboBox" 
+                      Width="200"
+                      SelectedIndex="0">
+                <ComboBoxItem Content="Все уровни"/>
+                <ComboBoxItem Content="Начинающий"/>
+                <ComboBoxItem Content="Продвинутый"/>
+                <ComboBoxItem Content="Эксперт"/>
+            </ComboBox>
+        </StackPanel>
+        
+        <ItemsControl x:Name="CoursesItemsControl">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Classes="courseCard" Margin="0,0,0,16">
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                            <!-- Иконка курса -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" 
+                                       Text="📚" 
+                                       FontSize="48" 
+                                       Margin="0,0,16,0"
+                                       VerticalAlignment="Top"/>
+                            
+                            <!-- Информация о курсе -->
+                            <StackPanel Grid.Row="0" Grid.Column="1">
+                                <TextBlock Text="{Binding Title}" 
+                                           FontSize="20" 
+                                           FontWeight="Bold" 
+                                           Foreground="#2E7D32"
+                                           Margin="0,0,0,8"/>
+                                
+                                <TextBlock Text="{Binding Description}" 
+                                           TextWrapping="Wrap"
+                                           Foreground="#546E7A"
+                                           Margin="0,0,0,8"
+                                           MaxHeight="60"
+                                           TextTrimming="CharacterEllipsis"/>
+                                
+                                <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,8,0,0">
+                                    <TextBlock>
+                                        <Run Text="⭐"/>
+                                        <Run Text="{Binding Rating, StringFormat='{}{0:F1}'}"/>
+                                        <Run Text="("/>
+                                        <Run Text="{Binding ReviewCount}"/>
+                                        <Run Text="отзывов)"/>
+                                    </TextBlock>
+                                    
+                                    <TextBlock Text="{Binding Category}" 
+                                               Foreground="#546E7A"/>
+                                    
+                                    <TextBlock Text="{Binding Difficulty}" 
+                                               Foreground="#546E7A"/>
+                                    
+                                    <TextBlock>
+                                        <Run Text="{Binding Price, StringFormat='{}{0:F0}'}"/>
+                                        <Run Text="₽" Foreground="#2E7D32" FontWeight="Bold"/>
+                                    </TextBlock>
+                                </StackPanel>
+                                
+                                <Button Content="Подробнее" 
+                                        Classes="primary"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,12,0,0"
+                                        CommandParameter="{Binding}"
+                                        Click="OnCourseDetailsClick"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
+        <TextBlock x:Name="NoCoursesTextBlock" 
+                   Text="Курсы не найдены" 
+                   Foreground="#546E7A"
+                   HorizontalAlignment="Center"
+                   IsVisible="False"/>
+    </StackPanel>
+</UserControl>
+
+
+
+
+
+
+

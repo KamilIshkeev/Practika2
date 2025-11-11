@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.TakeTestView"
+        Title="Прохождение теста"
+        Width="700" Height="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <ScrollViewer Margin="24">
+        <StackPanel x:Name="TestPanel" Spacing="16">
+            <TextBlock x:Name="TestTitleTextBlock" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"/>
+            <TextBlock x:Name="TestDescriptionTextBlock" 
+                       TextWrapping="Wrap"
+                       Foreground="#546E7A"
+                       Margin="0,0,0,16"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
+
+
+

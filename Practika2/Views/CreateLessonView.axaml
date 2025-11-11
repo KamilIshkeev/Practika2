@@ -1,0 +1,54 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.CreateLessonView"
+        Title="Создать урок"
+        Width="600" Height="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16">
+            <TextBlock Text="Создание урока" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"
+                       Margin="0,0,0,16"/>
+            
+            <TextBox x:Name="TitleTextBox" Watermark="Название урока" Padding="12,8"/>
+            <TextBox x:Name="DescriptionTextBox" 
+                     Watermark="Описание" 
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Height="100"
+                     Padding="12,8"/>
+            
+            <ComboBox x:Name="TypeComboBox" SelectedIndex="0">
+                <ComboBoxItem Content="Видео"/>
+                <ComboBoxItem Content="Текст"/>
+                <ComboBoxItem Content="PDF"/>
+                <ComboBoxItem Content="Ссылка"/>
+                <ComboBoxItem Content="Вебинар"/>
+            </ComboBox>
+            
+            <TextBox x:Name="ContentUrlTextBox" Watermark="URL контента (видео, PDF, ссылка)" Padding="12,8"/>
+            <TextBox x:Name="ContentTextBox" 
+                     Watermark="Текстовый контент" 
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Height="150"
+                     Padding="12,8"/>
+            
+            <TextBox x:Name="DurationTextBox" Watermark="Длительность (минуты)" Padding="12,8"/>
+            <TextBox x:Name="OrderTextBox" Watermark="Порядок в модуле" Padding="12,8"/>
+            
+            <Button x:Name="SaveButton" 
+                    Content="Сохранить" 
+                    Classes="primary"
+                    HorizontalAlignment="Left"
+                    Click="OnSaveClick"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
+
+
+

@@ -1,0 +1,279 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Practika2.Views.TeacherPanelView">
+    
+    <TabControl>
+        <TabItem Header="Мои курсы">
+            <StackPanel Margin="16" Spacing="16">
+                <TextBlock Text="Курсы, которые я преподаю" Classes="heading"/>
+                <ItemsControl x:Name="TeacherCoursesItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="courseCard" Margin="0,0,0,16">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Title}" 
+                                                   FontSize="18" 
+                                                   FontWeight="Bold" 
+                                                   Foreground="#2E7D32"
+                                                   Margin="0,0,0,8"/>
+                                        <TextBlock Text="{Binding Description}" 
+                                                   TextWrapping="Wrap"
+                                                   Foreground="#546E7A"
+                                                   Margin="0,0,0,8"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                        <Button Content="📚 Управление" 
+                                                CommandParameter="{Binding}"
+                                                Click="OnManageCourseClick"/>
+                                        <Button Content="📊 Аналитика" 
+                                                CommandParameter="{Binding}"
+                                                Click="OnViewAnalyticsClick"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </TabItem>
+        
+        <TabItem Header="Уроки и материалы">
+            <StackPanel Margin="16" Spacing="16">
+                <TextBlock Text="Управление уроками" Classes="heading"/>
+                <ComboBox x:Name="CourseSelectorComboBox" 
+                          SelectionChanged="OnCourseSelected"
+                          Margin="0,0,0,16"/>
+                
+                <Button x:Name="AddLessonButton" 
+                        Content="➕ Добавить урок" 
+                        Classes="primary"
+                        HorizontalAlignment="Left"
+                        Click="OnAddLessonClick"
+                        IsEnabled="False"/>
+                
+                <ItemsControl x:Name="LessonsItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="courseCard" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Title}" 
+                                                   FontWeight="Bold"
+                                                   Margin="0,0,0,4"/>
+                                        <TextBlock Text="{Binding Type}" 
+                                                   Foreground="#546E7A"
+                                                   FontSize="12"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                        <Button Content="✏️" 
+                                                CommandParameter="{Binding}"
+                                                Click="OnEditLessonClick"/>
+                                        <Button Content="🗑️" 
+                                                CommandParameter="{Binding}"
+                                                Click="OnDeleteLessonClick"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </TabItem>
+        
+        <TabItem Header="Тесты">
+            <StackPanel Margin="16" Spacing="16">
+                <TextBlock Text="Управление тестами" Classes="heading"/>
+                <ComboBox x:Name="TestCourseSelectorComboBox" 
+                          SelectionChanged="OnTestCourseSelected"
+                          Margin="0,0,0,16"/>
+                
+                <Button x:Name="CreateTestButton" 
+                        Content="➕ Создать тест" 
+                        Classes="primary"
+                        HorizontalAlignment="Left"
+                        Click="OnCreateTestClick"
+                        IsEnabled="False"/>
+                
+                <ItemsControl x:Name="TestsItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="courseCard" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Title}" 
+                                                   FontWeight="Bold"
+                                                   Margin="0,0,0,4"/>
+                                        <TextBlock Text="{Binding PassingScorePercent, StringFormat='Проходной балл: {0}%'}" 
+                                                   Foreground="#546E7A"
+                                                   FontSize="12"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                        <Button Content="✏️" 
+                                                CommandParameter="{Binding}"
+                                                Click="OnEditTestClick"/>
+                                        <Button Content="📊 Статистика" 
+                                                CommandParameter="{Binding}"
+                                                Click="OnTestStatsClick"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </TabItem>
+        
+        <TabItem Header="Проверка заданий">
+            <StackPanel Margin="16" Spacing="16">
+                <TextBlock Text="Задания на проверку" Classes="heading"/>
+                <ItemsControl x:Name="SubmissionsItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="courseCard" Margin="0,0,0,16">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="{Binding Assignment.Title}" 
+                                               FontWeight="Bold"
+                                               FontSize="16"/>
+                                    <TextBlock Text="{Binding Student.Username, StringFormat='Студент: {0}'}" 
+                                               Foreground="#546E7A"/>
+                                    <TextBlock Text="{Binding Content}" 
+                                               TextWrapping="Wrap"
+                                               Margin="0,8,0,8"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBox x:Name="PointsTextBox" 
+                                                 Watermark="Баллы" 
+                                                 Width="100"/>
+                                        <TextBox x:Name="CommentTextBox" 
+                                                 Watermark="Комментарий" 
+                                                 Width="300"/>
+                                        <Button Content="✅ Оценить" 
+                                                CommandParameter="{Binding}"
+                                                Click="OnGradeSubmissionClick"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </TabItem>
+        
+        <TabItem Header="Вебинары">
+            <StackPanel Margin="16" Spacing="16">
+                <TextBlock Text="Управление вебинарами" Classes="heading"/>
+                <Button x:Name="CreateWebinarButton" 
+                        Content="➕ Создать вебинар" 
+                        Classes="primary"
+                        HorizontalAlignment="Left"
+                        Click="OnCreateWebinarClick"/>
+                
+                <ItemsControl x:Name="WebinarsItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="courseCard" Margin="0,0,0,8">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Lesson.Title}" 
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding ScheduledAt, StringFormat='Запланирован: {0:dd.MM.yyyy HH:mm}'}" 
+                                               Foreground="#546E7A"/>
+                                    <TextBlock Text="{Binding Link}" 
+                                               Foreground="#2E7D32"
+                                               Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </TabItem>
+        
+        <TabItem Header="Обсуждения">
+            <StackPanel Margin="16" Spacing="16">
+                <TextBlock Text="Обсуждения курсов" Classes="heading"/>
+                <ItemsControl x:Name="DiscussionsItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="courseCard" Margin="0,0,0,8">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="{Binding Title}" 
+                                               FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Messages.Count, StringFormat='Сообщений: {0}'}" 
+                                               Foreground="#546E7A"/>
+                                    <Button Content="💬 Открыть" 
+                                            CommandParameter="{Binding}"
+                                            Click="OnOpenDiscussionClick"
+                                            HorizontalAlignment="Left"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </TabItem>
+        
+        <TabItem Header="Анонсы">
+            <StackPanel Margin="16" Spacing="16">
+                <TextBlock Text="Управление анонсами" Classes="heading"/>
+                <Button x:Name="CreateAnnouncementButton" 
+                        Content="➕ Создать анонс" 
+                        Classes="primary"
+                        HorizontalAlignment="Left"
+                        Click="OnCreateAnnouncementClick"/>
+                
+                <ItemsControl x:Name="AnnouncementsItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="courseCard" Margin="0,0,0,8">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" 
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding Content}" 
+                                               TextWrapping="Wrap"
+                                               Foreground="#546E7A"/>
+                                    <TextBlock Text="{Binding CreatedAt, StringFormat='Создан: {0:dd.MM.yyyy}'}" 
+                                               Foreground="#546E7A"
+                                               FontSize="12"
+                                               Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </TabItem>
+        
+        <TabItem Header="Аналитика курса">
+            <ScrollViewer Margin="16">
+                <StackPanel x:Name="AnalyticsPanel" Spacing="16">
+                    <TextBlock Text="Аналитика по курсу" Classes="heading"/>
+                    <ComboBox x:Name="AnalyticsCourseSelectorComboBox" 
+                              SelectionChanged="OnAnalyticsCourseSelected"
+                              Margin="0,0,0,16"/>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+    </TabControl>
+</UserControl>
+
+

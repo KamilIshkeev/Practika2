@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.DiscussionView"
+        Title="Обсуждение"
+        Width="700" Height="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <Grid Margin="24" RowDefinitions="Auto,*,Auto">
+        <TextBlock Grid.Row="0" 
+                   x:Name="TitleTextBlock" 
+                   FontSize="20" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,16"/>
+        
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl x:Name="MessagesItemsControl">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="#E0E0E0" BorderThickness="1" Padding="12" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Author.Username}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" 
+                                           Foreground="#546E7A" 
+                                           FontSize="12"
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        
+        <StackPanel Grid.Row="2" Spacing="8" Margin="0,16,0,0">
+            <TextBox x:Name="MessageTextBox" 
+                     Watermark="Ваше сообщение" 
+                     AcceptsReturn="True"
+                     Height="60"/>
+            <Button x:Name="SendButton" 
+                    Content="Отправить" 
+                    Classes="primary"
+                    HorizontalAlignment="Left"
+                    Click="OnSendClick"/>
+        </StackPanel>
+    </Grid>
+</Window>
+
+

@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.TestStatisticsView"
+        Title="Статистика теста"
+        Width="600" Height="500"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <ScrollViewer Margin="24">
+        <StackPanel x:Name="StatsPanel" Spacing="16">
+            <TextBlock Text="Статистика теста" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
+
+
+

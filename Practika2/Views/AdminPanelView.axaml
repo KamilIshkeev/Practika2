@@ -1,0 +1,119 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Practika2.Views.AdminPanelView">
+    
+    <TabControl>
+        <TabItem Header="Управление курсами">
+            <StackPanel Margin="16" Spacing="16">
+                <Button x:Name="CreateCourseButton" 
+                        Content="➕ Создать новый курс" 
+                        Classes="primary"
+                        HorizontalAlignment="Left"
+                        Click="OnCreateCourseClick"/>
+                
+                <ItemsControl x:Name="AllCoursesItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="courseCard" Margin="0,0,0,16">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Title}" 
+                                                   FontSize="18" 
+                                                   FontWeight="Bold" 
+                                                   Foreground="#2E7D32"
+                                                   Margin="0,0,0,8"/>
+                                        <TextBlock Text="{Binding Description}" 
+                                                   TextWrapping="Wrap"
+                                                   Foreground="#546E7A"
+                                                   Margin="0,0,0,8"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <TextBlock Text="{Binding IsPublished, StringFormat='Опубликован: {0}'}" 
+                                                       Foreground="#546E7A"/>
+                                            <TextBlock Text="{Binding IsArchived, StringFormat='Архивирован: {0}'}" 
+                                                       Foreground="#546E7A"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                        <Button Content="✏️" 
+                                                CommandParameter="{Binding}"
+                                                Click="OnEditCourseClick"/>
+                                        <Button Content="🗑️" 
+                                                CommandParameter="{Binding}"
+                                                Click="OnDeleteCourseClick"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </TabItem>
+        
+        <TabItem Header="Управление пользователями">
+			<Grid Margin="16" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,*">
+				<TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Управление пользователями" Classes="subheading"/>
+				
+				<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="8" Margin="0,8,0,8">
+					<Button Content="🔄 Обновить" Click="OnRefreshUsersClick"/>
+				</StackPanel>
+				
+				<DataGrid Grid.Row="2" Grid.ColumnSpan="2" x:Name="UsersGrid" AutoGenerateColumns="False" IsReadOnly="True">
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+						<DataGridTextColumn Header="Логин" Binding="{Binding Username}" Width="*"/>
+						<DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="2*"/>
+						<DataGridTextColumn Header="Роль" Binding="{Binding Role}" Width="*"/>
+						<DataGridCheckBoxColumn Header="Заблокирован" Binding="{Binding IsBlocked}" Width="120"/>
+						<DataGridTemplateColumn Header="Действия" Width="220">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<StackPanel Orientation="Horizontal" Spacing="8">
+										<Button Content="🚫 Блок" CommandParameter="{Binding}" Click="OnBlockUserClick"/>
+										<Button Content="✅ Разблок" CommandParameter="{Binding}" Click="OnUnblockUserClick"/>
+									</StackPanel>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+				
+				<!-- Назначение преподавателя курсу -->
+				<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+					<TextBlock Text="Курс ID:" VerticalAlignment="Center"/>
+					<TextBox x:Name="AssignCourseIdTextBox" Width="100"/>
+					<TextBlock Text="Преподаватель ID:" VerticalAlignment="Center"/>
+					<TextBox x:Name="AssignTeacherIdTextBox" Width="100"/>
+					<Button Content="👨‍🏫 Назначить" Click="OnAssignTeacherClick"/>
+				</StackPanel>
+			</Grid>
+        </TabItem>
+		
+		<TabItem Header="Аналитика">
+			<Grid Margin="16" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,*">
+				<TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Аналитика по курсу" Classes="subheading"/>
+				
+				<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="8" Margin="0,8,0,8">
+					<TextBlock Text="Курс ID:" VerticalAlignment="Center"/>
+					<TextBox x:Name="AnalyticsCourseIdTextBox" Width="120"/>
+					<Button Content="📊 Рассчитать" Click="OnCalculateAnalyticsClick"/>
+				</StackPanel>
+				
+				<StackPanel Grid.Row="2" Grid.Column="0" Spacing="8">
+					<TextBlock x:Name="AnalyticsEnrollmentsText" Text="Записей: -" Foreground="#546E7A"/>
+					<TextBlock x:Name="AnalyticsCompletionText" Text="Средний прогресс: -" Foreground="#546E7A"/>
+					<TextBlock x:Name="AnalyticsRevenueText" Text="Доход: -" Foreground="#546E7A"/>
+				</StackPanel>
+			</Grid>
+		</TabItem>
+    </TabControl>
+</UserControl>
+
+
+
+

@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.CreateWebinarView"
+        Title="Создать вебинар"
+        Width="500" Height="400"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16">
+            <TextBlock Text="Создание вебинара" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"/>
+            <ComboBox x:Name="LessonComboBox"/>
+            <TextBox x:Name="LinkTextBox" Watermark="Ссылка на вебинар" Padding="12,8"/>
+            <DatePicker x:Name="ScheduledDatePicker"/>
+            <Button x:Name="SaveButton" 
+                    Content="Сохранить" 
+                    Classes="primary"
+                    Click="OnSaveClick"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
+
+

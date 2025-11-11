@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Practika2.Views.AssignmentsView">
+    
+    <StackPanel Spacing="16" Margin="16">
+        <TextBlock Text="Задания" Classes="heading"/>
+        
+        <ItemsControl x:Name="AssignmentsItemsControl">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Classes="courseCard" Margin="0,0,0,16">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="{Binding Title}" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="#2E7D32"/>
+                            <TextBlock Text="{Binding Description}" 
+                                       TextWrapping="Wrap"
+                                       Foreground="#546E7A"
+                                       Margin="0,0,0,8"/>
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <TextBlock Text="{Binding MaxPoints, StringFormat='Макс. баллов: {0}'}" 
+                                           Foreground="#546E7A"/>
+                                <TextBlock Text="{Binding Deadline, StringFormat='Дедлайн: {0:dd.MM.yyyy}'}" 
+                                           Foreground="#FF6F61"/>
+                            </StackPanel>
+                            <Button Content="📝 Выполнить задание" 
+                                    Classes="primary"
+                                    HorizontalAlignment="Left"
+                                    CommandParameter="{Binding}"
+                                    Click="OnSubmitAssignmentClick"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
+        <TextBlock x:Name="NoAssignmentsTextBlock" 
+                   Text="Задания не найдены" 
+                   Foreground="#546E7A"
+                   HorizontalAlignment="Center"
+                   IsVisible="False"/>
+    </StackPanel>
+</UserControl>
+
+
+
+
+

@@ -1,0 +1,118 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Practika2.Views.MyCoursesView">
+    
+    <StackPanel Spacing="16">
+        <TextBlock Text="Мои курсы" Classes="heading"/>
+
+        <!-- Настройки уведомлений -->
+        <Border Classes="courseCard">
+            <StackPanel Spacing="8">
+                <TextBlock Text="Настройки уведомлений" Classes="subheading"/>
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <CheckBox x:Name="PrefDeadlines" Content="Дедлайны" IsChecked="True"/>
+                    <CheckBox x:Name="PrefNewMaterials" Content="Новые материалы" IsChecked="True"/>
+                    <CheckBox x:Name="PrefGrading" Content="Результаты проверки" IsChecked="True"/>
+                    <Button Content="💾 Сохранить" Click="OnSavePreferencesClick"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        
+        <TextBlock Text="Текущие курсы" Classes="subheading"/>
+        <ItemsControl x:Name="EnrollmentsItemsControl">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Classes="courseCard" Margin="0,0,0,16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" 
+                                       Text="{Binding Course.Title}" 
+                                       FontSize="20" 
+                                       FontWeight="Bold" 
+                                       Foreground="#2E7D32"
+                                       Margin="0,0,0,8"/>
+                            
+                            <ProgressBar Grid.Row="1" 
+                                         Value="{Binding Progress}" 
+                                         Maximum="100"
+                                         Height="24"
+                                         Margin="0,0,0,8"/>
+                            
+                            <TextBlock Grid.Row="2" 
+                                       Text="{Binding Progress, StringFormat='Прогресс: {0:F0}%'}" 
+                                       Foreground="#546E7A"
+                                       Margin="0,0,0,8"/>
+                            
+                            <Button Grid.Row="3" 
+                                    Content="Продолжить обучение" 
+                                    Classes="primary"
+                                    HorizontalAlignment="Left"
+                                    CommandParameter="{Binding}"
+                                    Click="OnContinueCourseClick"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
+        <TextBlock x:Name="NoEnrollmentsTextBlock" 
+                   Text="Вы еще не записаны ни на один курс" 
+                   Foreground="#546E7A"
+                   HorizontalAlignment="Center"
+                   IsVisible="False"/>
+
+        <TextBlock Text="Завершенные курсы" Classes="subheading"/>
+        <ItemsControl x:Name="CompletedItemsControl">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Classes="courseCard" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Course.Title}" 
+                                       FontSize="20" 
+                                       FontWeight="Bold" 
+                                       Foreground="#2E7D32"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="Статус: Завершен" Foreground="#546E7A"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
+        <Separator Margin="0,24,0,16"/>
+        
+        <TextBlock Text="Ваши бейджи" 
+                   Classes="subheading"
+                   Margin="0,0,0,16"/>
+        
+        <ItemsControl x:Name="BadgesItemsControl">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Classes="courseCard" Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Badge.Title}" 
+                                       FontWeight="Bold"
+                                       Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding Badge.Description}" 
+                                       Foreground="#546E7A"
+                                       TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding AwardedAt, StringFormat='Получен: {0:dd.MM.yyyy}'}" 
+                                       Foreground="#546E7A"
+                                       FontSize="12"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>
+
+
+
+

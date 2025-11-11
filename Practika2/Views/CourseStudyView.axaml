@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.CourseStudyView"
+        Title="Изучение курса"
+        Width="1000" Height="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <Grid ColumnDefinitions="300,*">
+        <!-- Список модулей и уроков -->
+        <Border Grid.Column="0" 
+                Background="White" 
+                BorderBrush="#E0E0E0" 
+                BorderThickness="0,0,1,0">
+            <ScrollViewer>
+                <StackPanel x:Name="ModulesPanel" Margin="16"/>
+            </ScrollViewer>
+        </Border>
+        
+        <!-- Контент урока -->
+        <ScrollViewer Grid.Column="1" Margin="24">
+            <StackPanel x:Name="LessonContentPanel" Spacing="16">
+                <TextBlock x:Name="LessonTitleTextBlock" 
+                           FontSize="24" 
+                           FontWeight="Bold" 
+                           Foreground="#2E7D32"/>
+                <TextBlock x:Name="LessonContentTextBlock" 
+                           TextWrapping="Wrap"
+                           Foreground="#546E7A"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.CreateCourseView"
+        Title="Создать курс"
+        Width="600" Height="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16">
+            <TextBlock Text="Создание курса" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"
+                       Margin="0,0,0,16"/>
+            
+            <TextBox x:Name="TitleTextBox" Watermark="Название курса" Padding="12,8"/>
+            <TextBox x:Name="DescriptionTextBox" 
+                     Watermark="Описание" 
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Height="100"
+                     Padding="12,8"/>
+            
+            <ComboBox x:Name="CategoryComboBox" SelectedIndex="0">
+                <ComboBoxItem Content="IT"/>
+                <ComboBoxItem Content="Бизнес"/>
+                <ComboBoxItem Content="Дизайн"/>
+                <ComboBoxItem Content="Маркетинг"/>
+                <ComboBoxItem Content="Языки"/>
+                <ComboBoxItem Content="Другое"/>
+            </ComboBox>
+            
+            <ComboBox x:Name="DifficultyComboBox" SelectedIndex="0">
+                <ComboBoxItem Content="Начинающий"/>
+                <ComboBoxItem Content="Продвинутый"/>
+                <ComboBoxItem Content="Эксперт"/>
+            </ComboBox>
+            
+            <TextBox x:Name="DurationTextBox" Watermark="Продолжительность (часы)" Padding="12,8"/>
+            <TextBox x:Name="PriceTextBox" Watermark="Цена (0 для бесплатного)" Padding="12,8"/>
+            
+            <ComboBox x:Name="FormatComboBox" SelectedIndex="0">
+                <ComboBoxItem Content="Видео"/>
+                <ComboBoxItem Content="Текст"/>
+                <ComboBoxItem Content="Вебинар"/>
+                <ComboBoxItem Content="Смешанный"/>
+            </ComboBox>
+            
+            <TextBox x:Name="CoverImagePathTextBox" Watermark="Путь к обложке (опционально)" Padding="12,8"/>
+            
+            <CheckBox x:Name="IsPublishedCheckBox" Content="Опубликовать курс"/>
+            <CheckBox x:Name="IsArchivedCheckBox" Content="Архивировать курс"/>
+            
+            <Button x:Name="SaveButton" 
+                    Content="Сохранить" 
+                    Classes="primary"
+                    HorizontalAlignment="Left"
+                    Click="OnSaveClick"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
+
+
+
+
+

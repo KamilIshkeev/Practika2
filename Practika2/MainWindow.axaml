@@ -1,0 +1,96 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        x:Class="Practika2.MainWindow"
+        Title="EduTrack - Управление онлайн-обучением"
+        Width="1200" Height="800"
+        Background="#FCFCFC">
+    
+    <Grid RowDefinitions="Auto,*">
+        <!-- Шапка -->
+        <Border Grid.Row="0" 
+                Background="#2E7D32" 
+                Padding="20,16"
+                BoxShadow="0 2 8 #20000000">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <TextBlock Text="📚" FontSize="24" VerticalAlignment="Center"/>
+                    <TextBlock Text="EduTrack" 
+                               FontSize="20" 
+                               FontWeight="Bold" 
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                    <TextBlock x:Name="UserNameTextBlock" 
+                               Text="Пользователь" 
+                               Foreground="White"
+                               VerticalAlignment="Center"
+                               Margin="0,0,16,0"/>
+                    <Button x:Name="LogoutButton" 
+                            Content="Выйти" 
+                            Background="#FF6F61"
+                            Foreground="White"
+                            Padding="16,8"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- Основной контент -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Боковое меню -->
+            <Border Grid.Column="0" 
+                    Background="White" 
+                    BorderBrush="#E0E0E0" 
+                    BorderThickness="0,0,1,0">
+                <StackPanel Margin="16" Spacing="8">
+                    <Button x:Name="CoursesButton" 
+                            Content="📖 Курсы" 
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,8"
+                            Margin="0,0,0,8"/>
+                    <Button x:Name="MyCoursesButton" 
+                            Content="🎓 Мои курсы" 
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,8"
+                            Margin="0,0,0,8"/>
+                    <Button x:Name="AssignmentsButton" 
+                            Content="✅ Задания" 
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,8"
+                            Margin="0,0,0,8"/>
+                    <Button x:Name="TeacherPanelButton" 
+                            Content="👨‍🏫 Панель преподавателя" 
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,8"
+                            Margin="0,0,0,8"
+                            IsVisible="False"/>
+                    <Button x:Name="AdminPanelButton" 
+                            Content="⚙️ Панель администратора" 
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,8"
+                            Margin="0,0,0,8"
+                            IsVisible="False"/>
+                </StackPanel>
+            </Border>
+            
+            <!-- Контентная область -->
+            <ScrollViewer Grid.Column="1" Margin="16">
+                <ContentControl x:Name="ContentArea"/>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

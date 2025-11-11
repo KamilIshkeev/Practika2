@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.CreateTestView"
+        Title="Создать тест"
+        Width="700" Height="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16">
+            <TextBlock Text="Создание теста" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"
+                       Margin="0,0,0,16"/>
+            
+            <ComboBox x:Name="LessonComboBox"/>
+            <TextBox x:Name="TitleTextBox" Watermark="Название теста" Padding="12,8"/>
+            <TextBox x:Name="DescriptionTextBox" 
+                     Watermark="Описание" 
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Height="80"
+                     Padding="12,8"/>
+            
+            <TextBox x:Name="TimeLimitTextBox" Watermark="Время на прохождение (минуты)" Padding="12,8"/>
+            <TextBox x:Name="PassingScoreTextBox" Watermark="Проходной балл (%)" Padding="12,8"/>
+            
+            <Button x:Name="AddQuestionButton" 
+                    Content="➕ Добавить вопрос" 
+                    Classes="primary"
+                    Click="OnAddQuestionClick"/>
+            
+            <ItemsControl x:Name="QuestionsItemsControl">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="#E0E0E0" BorderThickness="1" Padding="12" Margin="0,0,0,8">
+                            <StackPanel Spacing="8">
+                                <TextBox Text="{Binding Text}" Watermark="Текст вопроса"/>
+                                <ItemsControl ItemsSource="{Binding Options}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding Text}" IsChecked="{Binding IsCorrect}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+            <Button x:Name="SaveButton" 
+                    Content="Сохранить тест" 
+                    Classes="primary"
+                    HorizontalAlignment="Left"
+                    Click="OnSaveClick"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
+
+

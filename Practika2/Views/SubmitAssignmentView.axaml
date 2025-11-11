@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.SubmitAssignmentView"
+        Title="Отправить задание"
+        Width="600" Height="500"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16">
+            <TextBlock x:Name="TitleTextBlock" 
+                       FontSize="20" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"/>
+            <TextBlock x:Name="DescriptionTextBlock" 
+                       TextWrapping="Wrap"
+                       Foreground="#546E7A"/>
+            
+            <TextBox x:Name="ContentTextBox" 
+                     Watermark="Ваш ответ" 
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Height="200"
+                     Padding="12,8"/>
+            
+            <Button x:Name="SubmitButton" 
+                    Content="Отправить" 
+                    Classes="primary"
+                    HorizontalAlignment="Left"
+                    Click="OnSubmitClick"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
+
+
+

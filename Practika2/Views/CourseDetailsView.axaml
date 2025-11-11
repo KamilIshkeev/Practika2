@@ -1,0 +1,81 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Practika2.Views.CourseDetailsView"
+        Title="Детали курса"
+        Width="800" Height="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16">
+            <TextBlock x:Name="CourseTitleTextBlock" 
+                       FontSize="28" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"/>
+            
+            <TextBlock x:Name="CourseDescriptionTextBlock" 
+                       TextWrapping="Wrap"
+                       Foreground="#546E7A"
+                       Margin="0,0,0,16"/>
+            
+            <StackPanel Orientation="Horizontal" Spacing="24" Margin="0,0,0,16">
+                <TextBlock x:Name="RatingTextBlock" Foreground="#546E7A"/>
+                <TextBlock x:Name="CategoryTextBlock" Foreground="#546E7A"/>
+                <TextBlock x:Name="DifficultyTextBlock" Foreground="#546E7A"/>
+                <TextBlock x:Name="PriceTextBlock" 
+                           Foreground="#2E7D32" 
+                           FontWeight="Bold"
+                           FontSize="18"/>
+            </StackPanel>
+            
+            <Button x:Name="EnrollButton" 
+                    Content="Записаться на курс" 
+                    Classes="primary"
+                    HorizontalAlignment="Left"
+                    Click="OnEnrollClick"/>
+            
+            <TextBlock x:Name="ErrorTextBlock" 
+                       Foreground="#E53935" 
+                       TextWrapping="Wrap"
+                       IsVisible="False"
+                       Margin="0,16,0,0"/>
+            
+            <Separator Margin="0,24,0,16"/>
+            
+            <TextBlock Text="Отзывы" 
+                       FontSize="20" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"
+                       Margin="0,0,0,16"/>
+            
+            <Button x:Name="AddReviewButton" 
+                    Content="➕ Оставить отзыв" 
+                    Classes="primary"
+                    HorizontalAlignment="Left"
+                    Click="OnAddReviewClick"
+                    Margin="0,0,0,16"/>
+            
+            <ItemsControl x:Name="ReviewsItemsControl">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="#E0E0E0" BorderThickness="1" Padding="12" Margin="0,0,0,8">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding User.Username}" FontWeight="Bold"/>
+                                    <TextBlock>
+                                        <Run Text="⭐"/>
+                                        <Run Text="{Binding Rating}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Comment}" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:dd.MM.yyyy}'}" 
+                                           Foreground="#546E7A" 
+                                           FontSize="12"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

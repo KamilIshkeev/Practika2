@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+        x:Class="Practika2.Views.RegisterView"
+        Title="EduTrack - Регистрация"
+        Width="400" Height="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#FCFCFC">
+    
+    <Grid Margin="40">
+        <StackPanel Spacing="16">
+            <TextBlock Text="Регистрация" 
+                       FontSize="28" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,24"/>
+            
+            <TextBox x:Name="UsernameTextBox" 
+                     Watermark="Имя пользователя" 
+                     FontSize="14"
+                     Padding="12,8"/>
+            
+            <TextBox x:Name="EmailTextBox" 
+                     Watermark="Email" 
+                     FontSize="14"
+                     Padding="12,8"/>
+            
+            <TextBox x:Name="PasswordTextBox" 
+                     Watermark="Пароль" 
+                     PasswordChar="•"
+                     FontSize="14"
+                     Padding="12,8"/>
+            
+            <ComboBox x:Name="RoleComboBox" 
+                      SelectedIndex="2"
+                      FontSize="14"
+                      Padding="12,8">
+                <ComboBoxItem Content="Администратор"/>
+                <ComboBoxItem Content="Преподаватель"/>
+                <ComboBoxItem Content="Студент"/>
+            </ComboBox>
+            
+            <Button x:Name="RegisterButton" 
+                    Content="Зарегистрироваться" 
+                    Classes="primary"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0"/>
+            
+            <TextBlock x:Name="ErrorTextBlock" 
+                       Foreground="#E53935" 
+                       TextWrapping="Wrap"
+                       IsVisible="False"
+                       Margin="0,8,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>
+
+
+
+
+
+
+
