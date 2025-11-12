@@ -1,9 +1,9 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
-using Avalonia.Media;
 using Microsoft.EntityFrameworkCore;
 using Practika2.Data;
 using Practika2.Models;
@@ -13,21 +13,15 @@ namespace Practika2.Views
 {
     public partial class CourseStudyView : Window
     {
-        private readonly EduTrackContext _context;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly AuthService _authService;
-        private readonly CourseService _courseService;
-        private readonly EnrollmentService _enrollmentService;
         private readonly CourseEnrollment _enrollment;
 
-        public CourseStudyView(EduTrackContext context, AuthService authService, 
-                              CourseService courseService, EnrollmentService enrollmentService, 
-                              CourseEnrollment enrollment)
+        public CourseStudyView(Func<EduTrackContext> contextFactory, AuthService authService, CourseEnrollment enrollment)
         {
             InitializeComponent();
-            _context = context;
+            _contextFactory = contextFactory;
             _authService = authService;
-            _courseService = courseService;
-            _enrollmentService = enrollmentService;
             _enrollment = enrollment;
             
             LoadCourseModules();
@@ -36,7 +30,8 @@ namespace Practika2.Views
 
         private async void LoadAnnouncements()
         {
-            var announcements = await _context.Announcements
+            using var context = _contextFactory();
+            var announcements = await context.Announcements
                 .Where(a => a.CourseId == _enrollment.CourseId)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
@@ -46,7 +41,8 @@ namespace Practika2.Views
 
         private async void LoadCourseModules()
         {
-            var course = await _context.Courses
+            using var context = _contextFactory();
+            var course = await context.Courses
                 .Include(c => c.Modules)
                     .ThenInclude(m => m.Lessons)
                 .FirstOrDefaultAsync(c => c.Id == _enrollment.CourseId);
@@ -89,50 +85,48 @@ namespace Practika2.Views
             LessonTitleTextBlock.Text = lesson.Title;
             LessonContentTextBlock.Text = lesson.Description + "\n\n" + (lesson.Content ?? "");
             
-            // Удалить старую кнопку теста, если есть
             var oldTestButton = LessonContentPanel.Children.OfType<Button>().FirstOrDefault(b => b.Content?.ToString()?.Contains("тест") == true);
             if (oldTestButton != null)
             {
                 LessonContentPanel.Children.Remove(oldTestButton);
             }
             
-            // Обновить прогресс
-            var progress = await _context.LessonProgresses
+            using var context = _contextFactory();
+            var enrollmentService = new EnrollmentService(context);
+
+            var progress = await context.LessonProgresses
                 .FirstOrDefaultAsync(lp => lp.LessonId == lesson.Id && lp.EnrollmentId == _enrollment.Id);
             
             if (progress != null)
             {
                 progress.ProgressPercentage = 100;
                 progress.IsCompleted = true;
-                progress.CompletedAt = System.DateTime.UtcNow;
+                progress.CompletedAt = DateTime.UtcNow;
                 
-                // Сохранить закладку (последний просмотренный урок)
                 _enrollment.LastViewedLessonId = lesson.Id;
                 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
                 
-                await _enrollmentService.UpdateProgressAsync(_enrollment.Id);
+                await enrollmentService.UpdateProgressAsync(_enrollment.Id);
             }
             
-            // Проверить, есть ли тест к уроку
-            var test = await _context.Tests
+            var test = await context.Tests
                 .Include(t => t.Questions)
                     .ThenInclude(q => q.Options)
                 .FirstOrDefaultAsync(t => t.LessonId == lesson.Id);
             
             if (test != null && _authService.IsStudent)
             {
-                // Показать кнопку для прохождения теста
                 var testButton = new Button 
                 { 
                     Content = "📝 Пройти тест",
                     Margin = new Avalonia.Thickness(0, 16, 0, 0),
                     HorizontalAlignment = HorizontalAlignment.Left
                 };
-                    testButton.Classes.Add("primary");
+                testButton.Classes.Add("primary");
                 testButton.Click += (s, e) => 
                 {
-                    var testWindow = new TakeTestView(_context, _authService, test, _enrollment);
+                    var testWindow = new TakeTestView(_contextFactory, _authService, test, _enrollment);
                     testWindow.Show();
                 };
                 LessonContentPanel.Children.Add(testButton);

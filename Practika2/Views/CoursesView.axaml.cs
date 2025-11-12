@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Controls;
@@ -10,20 +11,15 @@ namespace Practika2.Views
 {
     public partial class CoursesView : UserControl
     {
-        private readonly EduTrackContext _context;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly AuthService _authService;
-        private readonly CourseService _courseService;
-        private readonly EnrollmentService _enrollmentService;
         private List<Course> _allCourses = new();
 
-        public CoursesView(EduTrackContext context, AuthService authService, 
-                          CourseService courseService, EnrollmentService enrollmentService)
+        public CoursesView(Func<EduTrackContext> contextFactory, AuthService authService)
         {
             InitializeComponent();
-            _context = context;
+            _contextFactory = contextFactory;
             _authService = authService;
-            _courseService = courseService;
-            _enrollmentService = enrollmentService;
             
             CategoryFilterComboBox.SelectionChanged += OnFilterChanged;
             DifficultyFilterComboBox.SelectionChanged += OnFilterChanged;
@@ -44,14 +40,12 @@ namespace Practika2.Views
         {
             var filtered = _allCourses.AsEnumerable();
             
-            // Фильтр по категории
             if (CategoryFilterComboBox.SelectedIndex > 0)
             {
                 var category = (CourseCategory)(CategoryFilterComboBox.SelectedIndex - 1);
                 filtered = filtered.Where(c => c.Category == category);
             }
             
-            // Фильтр по сложности
             if (DifficultyFilterComboBox.SelectedIndex > 0)
             {
                 var difficulty = (DifficultyLevel)(DifficultyFilterComboBox.SelectedIndex - 1);
@@ -67,8 +61,7 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is Course course)
             {
-                var detailsWindow = new CourseDetailsView(_context, _authService, 
-                    _courseService, _enrollmentService, course);
+                var detailsWindow = new CourseDetailsView(_contextFactory, _authService, course);
                 detailsWindow.Show();
             }
         }
