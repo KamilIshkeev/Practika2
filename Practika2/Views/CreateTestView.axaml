@@ -37,13 +37,19 @@
                         <Border BorderBrush="#E0E0E0" BorderThickness="1" Padding="12" Margin="0,0,0,8">
                             <StackPanel Spacing="8">
                                 <TextBox Text="{Binding Text}" Watermark="Текст вопроса"/>
+                                <Button Content="➕ Добавить вариант" CommandParameter="{Binding}" Click="OnAddOptionClick"/>
                                 <ItemsControl ItemsSource="{Binding Options}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <CheckBox Content="{Binding Text}" IsChecked="{Binding IsCorrect}"/>
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <RadioButton IsChecked="{Binding IsCorrect}" GroupName="{Binding QuestionId}"/>
+                                                <TextBox Grid.Column="1" Text="{Binding Text}" Watermark="Текст варианта"/>
+                                                <Button Grid.Column="2" Content="🗑️" CommandParameter="{Binding}" Click="OnRemoveOptionClick"/>
+                                            </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                <Button Content="🗑️ Удалить вопрос" CommandParameter="{Binding}" Click="OnRemoveQuestionClick"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>

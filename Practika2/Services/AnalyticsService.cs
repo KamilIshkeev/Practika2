@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Practika2.Data;
+using System.Collections.Generic;
 
 namespace Practika2.Services
 {
@@ -62,6 +63,40 @@ namespace Practika2.Services
 				CompletedCourses = completed
 			};
 		}
+
+        public class RevenueData
+        {
+            public string CourseName { get; set; }
+            public decimal Revenue { get; set; }
+        }
+
+        public async Task<List<RevenueData>> GetRevenueByCourseAsync()
+        {
+            return await _context.Courses
+                .Select(c => new RevenueData
+                {
+                    CourseName = c.Title,
+                    Revenue = c.Price * c.Enrollments.Count
+                })
+                .ToListAsync();
+        }
+
+        public class CompletionsData
+        {
+            public string CourseName { get; set; }
+            public int Completions { get; set; }
+        }
+
+        public async Task<List<CompletionsData>> GetCompletionsByCourseAsync()
+        {
+            return await _context.Courses
+                .Select(c => new CompletionsData
+                {
+                    CourseName = c.Title,
+                    Completions = c.Enrollments.Count(e => e.Progress >= 100)
+                })
+                .ToListAsync();
+        }
 	}
 }
 

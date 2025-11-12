@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace Practika2.Views
         private readonly AuthService _authService;
         private readonly int _courseId;
         private readonly Test? _existingTest;
-        private readonly List<TestQuestion> _questions = new();
+        private readonly ObservableCollection<TestQuestion> _questions = new();
 
         public CreateTestView(EduTrackContext context, AuthService authService, int courseId, Test? existingTest = null)
         {
@@ -28,6 +29,7 @@ namespace Practika2.Views
             _existingTest = existingTest;
             
             LoadLessons();
+            QuestionsItemsControl.ItemsSource = _questions;
             
             if (_existingTest != null)
             {
@@ -62,17 +64,37 @@ namespace Practika2.Views
             {
                 Text = "Новый вопрос",
                 Type = QuestionType.SingleChoice,
-                Options = new List<TestAnswerOption>
+                Options = new ObservableCollection<TestAnswerOption>
                 {
-                    new TestAnswerOption { Text = "Вариант 1", IsCorrect = false },
-                    new TestAnswerOption { Text = "Вариант 2", IsCorrect = true },
-                    new TestAnswerOption { Text = "Вариант 3", IsCorrect = false },
-                    new TestAnswerOption { Text = "Вариант 4", IsCorrect = false }
+                    new TestAnswerOption { Text = "Новый вариант", IsCorrect = true }
                 }
             };
             _questions.Add(question);
-            QuestionsItemsControl.ItemsSource = null;
-            QuestionsItemsControl.ItemsSource = _questions;
+        }
+
+        private void OnAddOptionClick(object? sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is TestQuestion question)
+            {
+                question.Options.Add(new TestAnswerOption { Text = "Новый вариант" });
+            }
+        }
+
+        private void OnRemoveOptionClick(object? sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is TestAnswerOption option)
+            {
+                var question = _questions.FirstOrDefault(q => q.Options.Contains(option));
+                question?.Options.Remove(option);
+            }
+        }
+
+        private void OnRemoveQuestionClick(object? sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is TestQuestion question)
+            {
+                _questions.Remove(question);
+            }
         }
 
         private async void OnSaveClick(object? sender, RoutedEventArgs e)

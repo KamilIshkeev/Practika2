@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              x:Class="Practika2.Views.AdminPanelView">
     
     <TabControl>
@@ -37,6 +38,14 @@
                                             <TextBlock Text="{Binding IsArchived, StringFormat='Архивирован: {0}'}" 
                                                        Foreground="#546E7A"/>
                                         </StackPanel>
+                                        <TextBlock Text="Преподаватели:" FontWeight="Bold" Margin="0,8,0,4"/>
+                                        <ItemsControl ItemsSource="{Binding Teachers}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Teacher.Username}" Foreground="#546E7A"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
                                     </StackPanel>
                                     
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
@@ -61,6 +70,7 @@
 				
 				<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="8" Margin="0,8,0,8">
 					<Button Content="🔄 Обновить" Click="OnRefreshUsersClick"/>
+					<Button Content="➕ Добавить пользователя" Click="OnAddUserClick"/>
 				</StackPanel>
 				
 				<DataGrid Grid.Row="2" Grid.ColumnSpan="2" x:Name="UsersGrid" AutoGenerateColumns="False" IsReadOnly="True">
@@ -95,21 +105,18 @@
         </TabItem>
 		
 		<TabItem Header="Аналитика">
-			<Grid Margin="16" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,*">
-				<TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Аналитика по курсу" Classes="subheading"/>
-				
-				<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="8" Margin="0,8,0,8">
-					<TextBlock Text="Курс ID:" VerticalAlignment="Center"/>
-					<TextBox x:Name="AnalyticsCourseIdTextBox" Width="120"/>
-					<Button Content="📊 Рассчитать" Click="OnCalculateAnalyticsClick"/>
+			<ScrollViewer Margin="16">
+				<StackPanel Spacing="16">
+					<TextBlock Text="Аналитика" Classes="heading"/>
+					<Button Content="🔄 Пересчитать" Click="OnCalculateAnalyticsClick"/>
+
+					<TextBlock Text="Доходы по курсам" Classes="subheading"/>
+					<lvc:CartesianChart Series="{Binding RevenueSeries}" Height="300"/>
+
+					<TextBlock Text="Завершения курсов" Classes="subheading"/>
+					<lvc:CartesianChart Series="{Binding CompletionsSeries}" Height="300"/>
 				</StackPanel>
-				
-				<StackPanel Grid.Row="2" Grid.Column="0" Spacing="8">
-					<TextBlock x:Name="AnalyticsEnrollmentsText" Text="Записей: -" Foreground="#546E7A"/>
-					<TextBlock x:Name="AnalyticsCompletionText" Text="Средний прогресс: -" Foreground="#546E7A"/>
-					<TextBlock x:Name="AnalyticsRevenueText" Text="Доход: -" Foreground="#546E7A"/>
-				</StackPanel>
-			</Grid>
+			</ScrollViewer>
 		</TabItem>
     </TabControl>
 </UserControl>

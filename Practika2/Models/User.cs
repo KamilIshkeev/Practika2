@@ -38,6 +38,9 @@ namespace Practika2.Models
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
+        [StringLength(255)]
+        public string? ProfileImagePath { get; set; }
+
         // Navigation properties
         public ICollection<Course> CreatedCourses { get; set; } = new List<Course>();
         public ICollection<CourseEnrollment> Enrollments { get; set; } = new List<CourseEnrollment>();

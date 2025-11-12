@@ -19,6 +19,7 @@ namespace Practika2.Views
         private readonly WebinarService _webinarService;
         private readonly DiscussionService _discussionService;
         private readonly AnalyticsService _analyticsService;
+        private readonly BadgeService _badgeService;
 
         public TeacherPanelView(EduTrackContext context, AuthService authService)
         {
@@ -29,6 +30,7 @@ namespace Practika2.Views
             _webinarService = new WebinarService(_context);
             _discussionService = new DiscussionService(_context);
             _analyticsService = new AnalyticsService(_context);
+            _badgeService = new BadgeService(_context);
             
             LoadTeacherCourses();
             LoadSubmissions();
@@ -77,7 +79,6 @@ namespace Practika2.Views
                     .Include(s => s.Assignment)
                         .ThenInclude(a => a.Lesson)
                     .Include(s => s.Student)
-                    .Where(s => s.Points == null)
                     .ToListAsync();
             
                 SubmissionsItemsControl.ItemsSource = submissions;
@@ -272,6 +273,14 @@ namespace Practika2.Views
                     submission.GradedAt = DateTime.UtcNow;
                     await _context.SaveChangesAsync();
                     
+                    // Award badge for first submission
+                    var submissionCount = await _context.AssignmentSubmissions
+                        .CountAsync(s => s.StudentId == submission.StudentId && s.Points != null);
+                    if (submissionCount == 1)
+                    {
+                        await _badgeService.AwardBadgeAsync(submission.StudentId, "FIRST_SUBMISSION");
+                    }
+
                     LoadSubmissions();
                 }
             }
@@ -304,35 +313,22 @@ namespace Practika2.Views
         {
             if (AnalyticsCourseSelectorComboBox.SelectedItem is Course course)
             {
-                var stats = await _analyticsService.GetCourseAnalyticsAsync(course.Id);
+                var enrollments = await _context.CourseEnrollments
+                    .Include(en => en.Student)
+                    .Where(en => en.CourseId == course.Id)
+                    .ToListAsync();
                 
-                AnalyticsPanel.Children.Clear();
-                AnalyticsPanel.Children.Add(new TextBlock 
-                { 
-                    Text = $"Курс: {course.Title}",
-                    FontSize = 20,
-                    FontWeight = Avalonia.Media.FontWeight.Bold,
-                    Margin = new Avalonia.Thickness(0, 0, 0, 16)
-                });
-                
-                AnalyticsPanel.Children.Add(new TextBlock 
-                { 
-                    Text = $"Всего записей: {stats.TotalEnrollments}",
-                    Margin = new Avalonia.Thickness(0, 0, 0, 8)
-                });
-                
-                AnalyticsPanel.Children.Add(new TextBlock 
-                { 
-                    Text = $"Средний прогресс: {stats.AverageProgress:F1}%",
-                    Margin = new Avalonia.Thickness(0, 0, 0, 8)
-                });
-                
-                AnalyticsPanel.Children.Add(new TextBlock 
-                { 
-                    Text = $"Завершено курсов: {stats.CompletedCourses}",
-                    Margin = new Avalonia.Thickness(0, 0, 0, 8)
-                });
+                var grid = this.FindControl<DataGrid>("AnalyticsGrid");
+                if (grid != null)
+                {
+                    grid.ItemsSource = enrollments;
+                }
             }
+        }
+
+        private void OnRefreshAnalyticsClick(object? sender, RoutedEventArgs e)
+        {
+            OnAnalyticsCourseSelected(null, null);
         }
     }
 }

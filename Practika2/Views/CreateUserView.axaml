@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+        x:Class="Practika2.Views.CreateUserView"
+        Title="Создать/Редактировать пользователя">
+    <StackPanel Margin="20" Spacing="15">
+        <TextBox Watermark="Имя пользователя" x:Name="UsernameTextBox"/>
+        <TextBox Watermark="Email" x:Name="EmailTextBox"/>
+        <TextBox Watermark="Пароль" x:Name="PasswordTextBox"/>
+        <TextBox Watermark="Имя" x:Name="FirstNameTextBox"/>
+        <TextBox Watermark="Фамилия" x:Name="LastNameTextBox"/>
+        <ComboBox x:Name="RoleComboBox" SelectedIndex="0">
+            <ComboBoxItem Content="Администратор"/>
+            <ComboBoxItem Content="Преподаватель"/>
+            <ComboBoxItem Content="Студент"/>
+        </ComboBox>
+        <Button Content="Сохранить" x:Name="SaveButton"/>
+    </StackPanel>
+</Window>
