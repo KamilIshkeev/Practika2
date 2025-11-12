@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Practika2.Data;
 using Practika2.Models;
+using System;
 
 namespace Practika2.Services
 {
@@ -52,6 +53,28 @@ namespace Practika2.Services
 				_context.CourseTeachers.Remove(entity);
 				await _context.SaveChangesAsync();
 			}
+		}
+
+		public async Task CreateUserAsync(string username, string email, string password, string firstName, string lastName, UserRole role)
+		{
+			var user = new User
+			{
+				Username = username,
+				Email = email,
+				PasswordHash = password, // Plain text as per project requirements
+				FirstName = firstName,
+				LastName = lastName,
+				Role = role,
+				CreatedAt = DateTime.UtcNow
+			};
+			_context.Users.Add(user);
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task UpdateUserAsync(User user)
+		{
+			_context.Users.Update(user);
+			await _context.SaveChangesAsync();
 		}
 	}
 }

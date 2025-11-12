@@ -49,8 +49,15 @@ namespace Practika2
             CoursesButton.Click += (s, e) => LoadCourses();
             MyCoursesButton.Click += (s, e) => LoadMyCourses();
             AssignmentsButton.Click += (s, e) => LoadAssignments();
+            ProfileButton.Click += (s, e) => LoadProfile();
             AdminPanelButton.Click += (s, e) => LoadAdminPanel();
             TeacherPanelButton.Click += (s, e) => LoadTeacherPanel();
+        }
+
+        private void LoadProfile()
+        {
+            var profileView = new ProfileView(_context, _authService);
+            ContentArea.Content = profileView;
         }
 
         private async void LoadCourses()

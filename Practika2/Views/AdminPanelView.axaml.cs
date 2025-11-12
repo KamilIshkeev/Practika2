@@ -8,6 +8,8 @@ using Practika2.Data;
 using Practika2.Models;
 using Practika2.Services;
 	using System;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 
 namespace Practika2.Views
 {
@@ -18,6 +20,9 @@ namespace Practika2.Views
         private readonly CourseService _courseService;
 			private readonly UserManagementService _userManagementService;
 			private readonly AnalyticsService _analyticsService;
+
+        public ISeries[] RevenueSeries { get; set; }
+        public ISeries[] CompletionsSeries { get; set; }
 
         public AdminPanelView(EduTrackContext context, AuthService authService, CourseService courseService)
         {
@@ -30,11 +35,16 @@ namespace Practika2.Views
             
             LoadAllCourses();
 				LoadUsers();
+            OnCalculateAnalyticsClick(null, null);
+            DataContext = this;
         }
 
         private async void LoadAllCourses()
         {
-            var courses = await _courseService.GetCoursesAsync(publishedOnly: false);
+            var courses = await _context.Courses
+                .Include(c => c.Teachers)
+                .ThenInclude(ct => ct.Teacher)
+                .ToListAsync();
             AllCoursesItemsControl.ItemsSource = courses;
         }
 
@@ -71,6 +81,13 @@ namespace Practika2.Views
                 await _courseService.DeleteCourseAsync(course.Id);
                 LoadAllCourses();
             }
+        }
+
+        private void OnAddUserClick(object? sender, RoutedEventArgs e)
+        {
+            var createUserView = new CreateUserView(_context);
+            createUserView.Show();
+            createUserView.Closed += (s, args) => LoadUsers();
         }
 
 			private void OnRefreshUsersClick(object? sender, RoutedEventArgs e)
@@ -118,19 +135,37 @@ namespace Practika2.Views
 				}
 			}
 
-			private async void OnCalculateAnalyticsClick(object? sender, RoutedEventArgs e)
+			private async void OnCalculateAnalyticsClick(object? sender, RoutedEventArgs? e)
 			{
-				if (this.FindControl<TextBox>("AnalyticsCourseIdTextBox") is { } box &&
-				    int.TryParse(box.Text, out var courseId))
-				{
-					var count = await _analyticsService.GetCourseEnrollmentsCountAsync(courseId);
-					var avg = await _analyticsService.GetAverageCourseCompletionAsync(courseId);
-					var revenue = await _analyticsService.GetCourseRevenueAsync(courseId);
+                var revenueData = await _analyticsService.GetRevenueByCourseAsync();
+                RevenueSeries = new ISeries[]
+                {
+                    new ColumnSeries<decimal>
+                    {
+                        Values = revenueData.Select(d => d.Revenue).ToArray(),
+                        Name = "Доход"
+                    }
+                };
 
-					if (this.FindControl<TextBlock>("AnalyticsEnrollmentsText") is { } t1) t1.Text = $"Записей: {count}";
-					if (this.FindControl<TextBlock>("AnalyticsCompletionText") is { } t2) t2.Text = $"Средний прогресс: {avg:F1}%";
-					if (this.FindControl<TextBlock>("AnalyticsRevenueText") is { } t3) t3.Text = $"Доход: {revenue:F0}₽";
-				}
+                var completionsData = await _analyticsService.GetCompletionsByCourseAsync();
+                CompletionsSeries = new ISeries[]
+                {
+                    new ColumnSeries<int>
+                    {
+                        Values = completionsData.Select(d => d.Completions).ToArray(),
+                        Name = "Завершения"
+                    }
+                };
+
+                // This is a bit of a hack to force the UI to update.
+                // A better solution would be to use an MVVM framework.
+                var grid = this.FindControl<DataGrid>("UsersGrid");
+                if (grid != null)
+                {
+                    var items = grid.ItemsSource;
+                    grid.ItemsSource = null;
+                    grid.ItemsSource = items;
+                }
 			}
     }
 }

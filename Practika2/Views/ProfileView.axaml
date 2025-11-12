@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Practika2.ViewModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Practika2.Views.ProfileView">
+    <Grid RowDefinitions="Auto,*">
+        <TextBlock Text="Личный кабинет" FontSize="24" FontWeight="Bold" Margin="20"/>
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Margin="20" Spacing="15">
+                <!-- Profile Picture -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Image x:Name="ProfileImage" Width="100" Height="100" />
+                    <Button Content="Изменить фото" x:Name="ChangePhotoButton"/>
+                </StackPanel>
+
+                <!-- User Information -->
+                <TextBlock Text="Основная информация" FontSize="18" FontWeight="Medium"/>
+                <TextBox Watermark="Имя" x:Name="FirstNameTextBox"/>
+                <TextBox Watermark="Фамилия" x:Name="LastNameTextBox"/>
+                <TextBox Watermark="Email" x:Name="EmailTextBox"/>
+
+                <!-- Password Change -->
+                <TextBlock Text="Смена пароля" FontSize="18" FontWeight="Medium"/>
+                <TextBox Watermark="Новый пароль" PasswordChar="*" x:Name="NewPasswordTextBox"/>
+
+                <Button Content="Сохранить изменения" x:Name="SaveChangesButton"/>
+
+                <!-- Progress Charts -->
+                <TextBlock Text="Прогресс обучения" FontSize="18" FontWeight="Medium" Margin="0,20,0,0"/>
+                <TextBlock Text="Общий прогресс"/>
+                <lvc:CartesianChart Series="{Binding OverallProgressSeries}" Height="200"/>
+
+                <TextBlock Text="Прогресс по курсам"/>
+                <ItemsControl x:Name="CoursesProgressItemsControl" ItemsSource="{Binding CourseProgressSeries}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding CourseName}"/>
+                                <lvc:CartesianChart Series="{Binding Series}" Height="150"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

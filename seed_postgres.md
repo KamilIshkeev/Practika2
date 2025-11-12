@@ -63,11 +63,11 @@ RESTART IDENTITY CASCADE;
 
 -- 2) Пользователи: 1 админ, 40 преподавателей, 400 студентов
 -- Administrator (1 шт)
-INSERT INTO "Users" ("Username","Email","PasswordHash","FirstName","LastName","Role","IsBlocked","CreatedAt")
-VALUES ('admin','admin@edutrack.local','admin123','Администратор','Системы',0,false, NOW());
+INSERT INTO "Users" ("Username","Email","PasswordHash","FirstName","LastName","Role","IsBlocked","CreatedAt", "ProfileImagePath")
+VALUES ('admin','admin@edutrack.local','admin123','Администратор','Системы',0,false, NOW(), NULL);
 
 -- Teachers (id начнутся с 2)
-INSERT INTO "Users" ("Username","Email","PasswordHash","FirstName","LastName","Role","IsBlocked","CreatedAt")
+INSERT INTO "Users" ("Username","Email","PasswordHash","FirstName","LastName","Role","IsBlocked","CreatedAt", "ProfileImagePath")
 SELECT 
   CONCAT('teacher', gs) AS "Username",
   CONCAT('teacher', gs, '@edutrack.local') AS "Email",
@@ -76,11 +76,12 @@ SELECT
   CONCAT('Преп', gs) AS "LastName",
   1 AS "Role",
   false AS "IsBlocked",
-  NOW() - (gs || ' days')::interval AS "CreatedAt"
+  NOW() - (gs || ' days')::interval AS "CreatedAt",
+  NULL AS "ProfileImagePath"
 FROM generate_series(1, 40) AS gs;
 
 -- Students
-INSERT INTO "Users" ("Username","Email","PasswordHash","FirstName","LastName","Role","IsBlocked","CreatedAt")
+INSERT INTO "Users" ("Username","Email","PasswordHash","FirstName","LastName","Role","IsBlocked","CreatedAt", "ProfileImagePath")
 SELECT 
   CONCAT('student', gs) AS "Username",
   CONCAT('student', gs, '@edutrack.local') AS "Email",
@@ -89,7 +90,8 @@ SELECT
   CONCAT('Группа', (gs % 20) + 1) AS "LastName",
   2 AS "Role",
   false AS "IsBlocked",
-  NOW() - ( (gs % 120) || ' days')::interval AS "CreatedAt"
+  NOW() - ( (gs % 120) || ' days')::interval AS "CreatedAt",
+  NULL AS "ProfileImagePath"
 FROM generate_series(1, 400) AS gs;
 
 -- 3) Курсы: 30 курсов, создатели — админ или преподаватели по модулю

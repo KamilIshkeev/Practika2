@@ -31,6 +31,17 @@ namespace Practika2.Views
             _enrollment = enrollment;
             
             LoadCourseModules();
+            LoadAnnouncements();
+        }
+
+        private async void LoadAnnouncements()
+        {
+            var announcements = await _context.Announcements
+                .Where(a => a.CourseId == _enrollment.CourseId)
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
+
+            AnnouncementsItemsControl.ItemsSource = announcements;
         }
 
         private async void LoadCourseModules()

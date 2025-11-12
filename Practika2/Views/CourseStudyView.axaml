@@ -19,14 +19,34 @@
         
         <!-- Контент урока -->
         <ScrollViewer Grid.Column="1" Margin="24">
-            <StackPanel x:Name="LessonContentPanel" Spacing="16">
-                <TextBlock x:Name="LessonTitleTextBlock" 
-                           FontSize="24" 
-                           FontWeight="Bold" 
-                           Foreground="#2E7D32"/>
-                <TextBlock x:Name="LessonContentTextBlock" 
-                           TextWrapping="Wrap"
-                           Foreground="#546E7A"/>
+            <StackPanel Spacing="16">
+                <StackPanel x:Name="LessonContentPanel" Spacing="16">
+                    <TextBlock x:Name="LessonTitleTextBlock"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="#2E7D32"/>
+                    <TextBlock x:Name="LessonContentTextBlock"
+                               TextWrapping="Wrap"
+                               Foreground="#546E7A"/>
+                </StackPanel>
+
+                <Separator Margin="0,24,0,16"/>
+
+                <TextBlock Text="Анонсы курса" Classes="subheading"/>
+                <ItemsControl x:Name="AnnouncementsItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="courseCard" Margin="0,0,0,8">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" FontWeight="Bold" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding Content}" TextWrapping="Wrap" Foreground="#546E7A"/>
+                                    <TextBlock Text="{Binding CreatedAt, StringFormat='Создан: {0:dd.MM.yyyy}'}"
+                                               Foreground="#546E7A" FontSize="12" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
         </ScrollViewer>
     </Grid>

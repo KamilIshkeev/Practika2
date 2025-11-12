@@ -17,6 +17,7 @@ namespace Practika2.Views
         private readonly CourseService _courseService;
         private readonly EnrollmentService _enrollmentService;
 			private readonly NotificationPreferenceService _prefService;
+        private readonly BadgeService _badgeService;
 
         public MyCoursesView(EduTrackContext context, AuthService authService, 
                             CourseService courseService, EnrollmentService enrollmentService)
@@ -27,16 +28,22 @@ namespace Practika2.Views
             _courseService = courseService;
             _enrollmentService = enrollmentService;
 				_prefService = new NotificationPreferenceService(_context);
+                _badgeService = new BadgeService(_context);
 				
 				_ = LoadPreferencesAsync();
 				LoadBadges();
         }
 
-        public void LoadEnrollments(List<CourseEnrollment> enrollments)
+        public async void LoadEnrollments(List<CourseEnrollment> enrollments)
         {
 				var current = enrollments.Where(e => e.Progress < 100).ToList();
 				var completed = enrollments.Where(e => e.Progress >= 100).ToList();
 				
+                foreach (var enrollment in completed)
+                {
+                    await _badgeService.AwardBadgeAsync(enrollment.StudentId, "COURSE_FINISHER");
+                }
+
 				EnrollmentsItemsControl.ItemsSource = current;
 				CompletedItemsControl.ItemsSource = completed;
 				
