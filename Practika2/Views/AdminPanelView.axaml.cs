@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Practika2.Data;
 using Practika2.Models;
 using Practika2.Services;
+using System.Threading.Tasks;
 
 namespace Practika2.Views
 {
@@ -60,7 +61,7 @@ namespace Practika2.Views
 
         private void OnCreateCourseClick(object? sender, RoutedEventArgs e)
         {
-            var createWindow = new CreateCourseView(_contextFactory, _authService, new CourseService(_contextFactory()));
+            var createWindow = new CreateCourseView(_contextFactory, _authService);
             createWindow.Show();
             createWindow.Closed += (s, args) => LoadAllCourses();
         }
@@ -69,7 +70,7 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is Course course)
             {
-                var editWindow = new CreateCourseView(_contextFactory, _authService, new CourseService(_contextFactory()), course);
+                var editWindow = new CreateCourseView(_contextFactory, _authService, course);
                 editWindow.Show();
                 editWindow.Closed += (s, args) => LoadAllCourses();
             }
