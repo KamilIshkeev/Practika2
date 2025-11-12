@@ -10,28 +10,25 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
-using SkiaSharp;
 using System.Collections.Generic;
+using System;
 
 namespace Practika2.Views
 {
     public partial class ProfileView : UserControl
     {
-        private readonly EduTrackContext _context;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly AuthService _authService;
-        private readonly UserService _userService;
         private User _currentUser;
 
         public ISeries[] OverallProgressSeries { get; set; }
         public List<CourseProgressViewModel> CourseProgressSeries { get; set; }
 
-        public ProfileView(EduTrackContext context, AuthService authService)
+        public ProfileView(Func<EduTrackContext> contextFactory, AuthService authService)
         {
             InitializeComponent();
-            _context = context;
+            _contextFactory = contextFactory;
             _authService = authService;
-            _userService = new UserService(_context);
 
             _currentUser = _authService.CurrentUser!;
             LoadUserData();
@@ -59,12 +56,12 @@ namespace Practika2.Views
 
         private void LoadChartData()
         {
-            var enrollments = _context.CourseEnrollments
+            using var context = _contextFactory();
+            var enrollments = context.CourseEnrollments
                 .Where(e => e.StudentId == _currentUser.Id)
                 .Include(e => e.Course)
                 .ToList();
 
-            // Overall progress
             var overallProgress = enrollments.Any() ? enrollments.Average(e => e.Progress) : 0;
             OverallProgressSeries = new ISeries[]
             {
@@ -75,7 +72,6 @@ namespace Practika2.Views
                 }
             };
 
-            // Per-course progress
             CourseProgressSeries = new List<CourseProgressViewModel>();
             foreach (var enrollment in enrollments)
             {
@@ -99,9 +95,9 @@ namespace Practika2.Views
             var openFileDialog = new OpenFileDialog
             {
                 Title = "Выберите изображение профиля",
-                Filters = new System.Collections.Generic.List<FileDialogFilter>
+                Filters = new List<FileDialogFilter>
                 {
-                    new FileDialogFilter { Name = "Image Files", Extensions = new System.Collections.Generic.List<string> { "jpg", "jpeg", "png", "bmp" } }
+                    new FileDialogFilter { Name = "Image Files", Extensions = new List<string> { "jpg", "jpeg", "png", "bmp" } }
                 }
             };
 
@@ -119,16 +115,19 @@ namespace Practika2.Views
         {
             if (_currentUser == null) return;
 
+            using var context = _contextFactory();
+            var userService = new UserService(context);
+
             _currentUser.FirstName = this.FindControl<TextBox>("FirstNameTextBox")!.Text ?? "";
             _currentUser.LastName = this.FindControl<TextBox>("LastNameTextBox")!.Text ?? "";
             _currentUser.Email = this.FindControl<TextBox>("EmailTextBox")!.Text ?? "";
 
-            await _userService.UpdateUserAsync(_currentUser);
+            await userService.UpdateUserAsync(_currentUser);
 
             var newPassword = this.FindControl<TextBox>("NewPasswordTextBox")!.Text;
             if (!string.IsNullOrWhiteSpace(newPassword))
             {
-                await _userService.ChangePasswordAsync(_currentUser, newPassword);
+                await userService.ChangePasswordAsync(_currentUser, newPassword);
             }
         }
     }

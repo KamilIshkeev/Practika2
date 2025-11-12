@@ -9,15 +9,13 @@ namespace Practika2.Views
 {
     public partial class CreateUserView : Window
     {
-        private readonly EduTrackContext _context;
-        private readonly UserManagementService _userManagementService;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly User? _user;
 
-        public CreateUserView(EduTrackContext context, User? user = null)
+        public CreateUserView(Func<EduTrackContext> contextFactory, User? user = null)
         {
             InitializeComponent();
-            _context = context;
-            _userManagementService = new UserManagementService(_context);
+            _contextFactory = contextFactory;
             _user = user;
 
             if (_user != null)
@@ -41,14 +39,15 @@ namespace Practika2.Views
             var lastName = this.FindControl<TextBox>("LastNameTextBox")!.Text;
             var role = (UserRole)this.FindControl<ComboBox>("RoleComboBox")!.SelectedIndex;
 
+            using var context = _contextFactory();
+            var userManagementService = new UserManagementService(context);
+
             if (_user == null)
             {
-                // Create new user
-                await _userManagementService.CreateUserAsync(username, email, password, firstName, lastName, role);
+                await userManagementService.CreateUserAsync(username, email, password, firstName, lastName, role);
             }
             else
             {
-                // Update existing user
                 _user.Username = username;
                 _user.Email = email;
                 if (!string.IsNullOrWhiteSpace(password))
@@ -58,7 +57,7 @@ namespace Practika2.Views
                 _user.FirstName = firstName;
                 _user.LastName = lastName;
                 _user.Role = role;
-                await _userManagementService.UpdateUserAsync(_user);
+                await userManagementService.UpdateUserAsync(_user);
             }
 
             this.Close();

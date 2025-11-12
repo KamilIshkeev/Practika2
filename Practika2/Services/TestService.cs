@@ -25,6 +25,34 @@ namespace Practika2.Services
 				.FirstOrDefaultAsync(t => t.Id == testId);
 		}
 		
+		public async Task SaveTestWithQuestionsAsync(Test test, List<TestQuestion> questions)
+        {
+            if (test.Id == 0)
+            {
+                _context.Tests.Add(test);
+            }
+            else
+            {
+                _context.Tests.Update(test);
+
+                var existingQuestions = await _context.TestQuestions
+                    .Include(q => q.Options)
+                    .Where(q => q.TestId == test.Id)
+                    .ToListAsync();
+
+                _context.TestQuestions.RemoveRange(existingQuestions);
+            }
+
+            await _context.SaveChangesAsync();
+
+            foreach (var question in questions)
+            {
+                question.TestId = test.Id;
+                _context.TestQuestions.Add(question);
+            }
+            await _context.SaveChangesAsync();
+        }
+
 		public async Task<TestSubmission> SubmitAsync(int testId, int studentId, Dictionary<int, List<int>> answersByQuestion)
 		{
 			var test = await _context.Tests
@@ -93,6 +121,3 @@ namespace Practika2.Services
 		}
 	}
 }
-
-
-

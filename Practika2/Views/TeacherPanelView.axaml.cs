@@ -13,107 +13,82 @@ namespace Practika2.Views
 {
     public partial class TeacherPanelView : UserControl
     {
-        private readonly EduTrackContext _context;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly AuthService _authService;
-        private readonly TestService _testService;
-        private readonly WebinarService _webinarService;
-        private readonly DiscussionService _discussionService;
-        private readonly AnalyticsService _analyticsService;
-        private readonly BadgeService _badgeService;
 
-        public TeacherPanelView(EduTrackContext context, AuthService authService)
+        public TeacherPanelView(Func<EduTrackContext> contextFactory, AuthService authService)
         {
             InitializeComponent();
-            _context = context;
+            _contextFactory = contextFactory;
             _authService = authService;
-            _testService = new TestService(_context);
-            _webinarService = new WebinarService(_context);
-            _discussionService = new DiscussionService(_context);
-            _analyticsService = new AnalyticsService(_context);
-            _badgeService = new BadgeService(_context);
             
-            LoadTeacherCourses();
-            LoadSubmissions();
-            LoadWebinars();
-            LoadDiscussions();
-            LoadAnnouncements();
+            LoadInitialData();
         }
 
+        private async void LoadInitialData()
+        {
+            await LoadTeacherCourses();
+            await LoadSubmissions();
+            await LoadWebinars();
+            await LoadDiscussions();
+            await LoadAnnouncements();
+        }
 
-        private async void LoadTeacherCourses()
+        private async Task LoadTeacherCourses()
         {
             if (_authService.CurrentUser == null) return;
             
-            using (var ctx = new EduTrackContext())
-            {
-                var courses = await ctx.Courses
-                    .Include(c => c.Teachers)
-                    .Where(c => c.Teachers.Any(t => t.TeacherId == _authService.CurrentUser.Id))
-                    .ToListAsync();
-            
-                TeacherCoursesItemsControl.ItemsSource = courses;
-            
-                // Заполнить комбобоксы
-                CourseSelectorComboBox.ItemsSource = null;
-                CourseSelectorComboBox.Items?.Clear();
-                CourseSelectorComboBox.ItemsSource = courses;
-                CourseSelectorComboBox.SelectedIndex = -1;
+            using var context = _contextFactory();
+            var courses = await context.Courses
+                .Include(c => c.Teachers)
+                .Where(c => c.Teachers.Any(t => t.TeacherId == _authService.CurrentUser.Id))
+                .ToListAsync();
 
-                TestCourseSelectorComboBox.ItemsSource = null;
-                TestCourseSelectorComboBox.Items?.Clear();
-                TestCourseSelectorComboBox.ItemsSource = courses;
-                TestCourseSelectorComboBox.SelectedIndex = -1;
-
-                AnalyticsCourseSelectorComboBox.ItemsSource = null;
-                AnalyticsCourseSelectorComboBox.Items?.Clear();
-                AnalyticsCourseSelectorComboBox.ItemsSource = courses;
-                AnalyticsCourseSelectorComboBox.SelectedIndex = -1;
-            }
+            TeacherCoursesItemsControl.ItemsSource = courses;
+            
+            CourseSelectorComboBox.ItemsSource = courses;
+            TestCourseSelectorComboBox.ItemsSource = courses;
+            AnalyticsCourseSelectorComboBox.ItemsSource = courses;
         }
 
-        private async void LoadSubmissions()
+        private async Task LoadSubmissions()
         {
-            using (var ctx = new EduTrackContext())
-            {
-                var submissions = await ctx.AssignmentSubmissions
-                    .Include(s => s.Assignment)
-                        .ThenInclude(a => a.Lesson)
-                    .Include(s => s.Student)
-                    .ToListAsync();
-            
-                SubmissionsItemsControl.ItemsSource = submissions;
-            }
+            using var context = _contextFactory();
+            var submissions = await context.AssignmentSubmissions
+                .Include(s => s.Assignment)
+                    .ThenInclude(a => a.Lesson)
+                .Include(s => s.Student)
+                .ToListAsync();
+
+            SubmissionsItemsControl.ItemsSource = submissions;
         }
 
-        private async void LoadWebinars()
+        private async Task LoadWebinars()
         {
-            using (var ctx = new EduTrackContext())
-            {
-                var webinars = await ctx.WebinarSessions
-                    .Include(w => w.Lesson)
-                    .ToListAsync();
-            
-                WebinarsItemsControl.ItemsSource = webinars;
-            }
+            using var context = _contextFactory();
+            var webinars = await context.WebinarSessions
+                .Include(w => w.Lesson)
+                .ToListAsync();
+
+            WebinarsItemsControl.ItemsSource = webinars;
         }
 
-        private async void LoadDiscussions()
+        private async Task LoadDiscussions()
         {
-            using (var ctx = new EduTrackContext())
-            {
-                var discussions = await ctx.DiscussionThreads
-                    .Include(d => d.Messages)
-                    .ToListAsync();
-            
-                DiscussionsItemsControl.ItemsSource = discussions;
-            }
+            using var context = _contextFactory();
+            var discussions = await context.DiscussionThreads
+                .Include(d => d.Messages)
+                .ToListAsync();
+
+            DiscussionsItemsControl.ItemsSource = discussions;
         }
 
-        private async void LoadAnnouncements()
+        private async Task LoadAnnouncements()
         {
             if (_authService.CurrentUser == null) return;
             
-            var announcements = await _context.Announcements
+            using var context = _contextFactory();
+            var announcements = await context.Announcements
                 .Where(a => a.AuthorId == _authService.CurrentUser.Id)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
@@ -136,7 +111,8 @@ namespace Practika2.Views
 
         private async void LoadLessons(int courseId)
         {
-            var lessons = await _context.Lessons
+            using var context = _contextFactory();
+            var lessons = await context.Lessons
                 .Include(l => l.Module)
                 .Where(l => l.Module.CourseId == courseId)
                 .OrderBy(l => l.Module.Order)
@@ -150,7 +126,7 @@ namespace Practika2.Views
         {
             if (CourseSelectorComboBox.SelectedItem is Course course)
             {
-                var window = new CreateLessonView(_context, _authService, course.Id);
+                var window = new CreateLessonView(_contextFactory, _authService, course.Id);
                 window.Show();
                 window.Closed += (s, args) => LoadLessons(course.Id);
             }
@@ -160,7 +136,7 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is Lesson lesson)
             {
-                var window = new CreateLessonView(_context, _authService, lesson.Module.CourseId, lesson);
+                var window = new CreateLessonView(_contextFactory, _authService, lesson.Module.CourseId, lesson);
                 window.Show();
                 window.Closed += (s, args) => 
                 {
@@ -174,8 +150,9 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is Lesson lesson)
             {
-                _context.Lessons.Remove(lesson);
-                await _context.SaveChangesAsync();
+                using var context = _contextFactory();
+                context.Lessons.Remove(lesson);
+                await context.SaveChangesAsync();
                 
                 if (CourseSelectorComboBox.SelectedItem is Course course)
                     LoadLessons(course.Id);
@@ -186,7 +163,7 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is Course course)
             {
-                var window = new ManageCourseModulesView(_context, _authService, course);
+                var window = new ManageCourseModulesView(_contextFactory, _authService, course);
                 window.Show();
             }
         }
@@ -197,6 +174,13 @@ namespace Practika2.Views
             {
                 AnalyticsCourseSelectorComboBox.SelectedItem = course;
                 OnAnalyticsCourseSelected(null, null);
+
+                // Switch to the Analytics Tab
+                var tabControl = this.FindControl<TabControl>("MainTabControl");
+                if (tabControl != null)
+                {
+                    tabControl.SelectedIndex = 5; // Assuming "Аналитика курса" is the 6th tab (index 5)
+                }
             }
         }
 
@@ -215,7 +199,8 @@ namespace Practika2.Views
 
         private async void LoadTests(int courseId)
         {
-            var tests = await _context.Tests
+            using var context = _contextFactory();
+            var tests = await context.Tests
                 .Include(t => t.Lesson)
                     .ThenInclude(l => l.Module)
                 .Where(t => t.Lesson.Module.CourseId == courseId)
@@ -228,7 +213,7 @@ namespace Practika2.Views
         {
             if (TestCourseSelectorComboBox.SelectedItem is Course course)
             {
-                var window = new CreateTestView(_context, _authService, course.Id);
+                var window = new CreateTestView(_contextFactory, _authService, course.Id);
                 window.Show();
                 window.Closed += (s, args) => LoadTests(course.Id);
             }
@@ -238,7 +223,7 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is Test test)
             {
-                var window = new CreateTestView(_context, _authService, 0, test);
+                var window = new CreateTestView(_contextFactory, _authService, 0, test);
                 window.Show();
                 window.Closed += (s, args) => 
                 {
@@ -252,7 +237,9 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is Test test)
             {
-                var stats = await _testService.GetTestStatisticsAsync(test.Id);
+                using var context = _contextFactory();
+                var testService = new TestService(context);
+                var stats = await testService.GetTestStatisticsAsync(test.Id);
                 var window = new TestStatisticsView(stats);
                 window.Show();
             }
@@ -268,52 +255,56 @@ namespace Practika2.Views
                 
                 if (pointsBox != null && int.TryParse(pointsBox.Text, out var points))
                 {
+                    using var context = _contextFactory();
+                    var badgeService = new BadgeService(context);
+
                     submission.Points = points;
                     submission.Comment = commentBox?.Text;
                     submission.GradedAt = DateTime.UtcNow;
-                    await _context.SaveChangesAsync();
+                    context.AssignmentSubmissions.Update(submission);
+                    await context.SaveChangesAsync();
                     
-                    // Award badge for first submission
-                    var submissionCount = await _context.AssignmentSubmissions
+                    var submissionCount = await context.AssignmentSubmissions
                         .CountAsync(s => s.StudentId == submission.StudentId && s.Points != null);
                     if (submissionCount == 1)
                     {
-                        await _badgeService.AwardBadgeAsync(submission.StudentId, "FIRST_SUBMISSION");
+                        await badgeService.AwardBadgeAsync(submission.StudentId, "FIRST_SUBMISSION");
                     }
 
-                    LoadSubmissions();
+                    await LoadSubmissions();
                 }
             }
         }
 
         private void OnCreateWebinarClick(object? sender, RoutedEventArgs e)
         {
-            var window = new CreateWebinarView(_context, _authService);
+            var window = new CreateWebinarView(_contextFactory, _authService);
             window.Show();
-            window.Closed += (s, args) => LoadWebinars();
+            window.Closed += async (s, args) => await LoadWebinars();
         }
 
         private void OnOpenDiscussionClick(object? sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.CommandParameter is DiscussionThread thread)
             {
-                var window = new DiscussionView(_context, _authService, thread);
+                var window = new DiscussionView(_contextFactory, _authService, thread);
                 window.Show();
             }
         }
 
         private void OnCreateAnnouncementClick(object? sender, RoutedEventArgs e)
         {
-            var window = new CreateAnnouncementView(_context, _authService);
+            var window = new CreateAnnouncementView(_contextFactory, _authService);
             window.Show();
-            window.Closed += (s, args) => LoadAnnouncements();
+            window.Closed += async (s, args) => await LoadAnnouncements();
         }
 
         private async void OnAnalyticsCourseSelected(object? sender, SelectionChangedEventArgs? e)
         {
             if (AnalyticsCourseSelectorComboBox.SelectedItem is Course course)
             {
-                var enrollments = await _context.CourseEnrollments
+                using var context = _contextFactory();
+                var enrollments = await context.CourseEnrollments
                     .Include(en => en.Student)
                     .Where(en => en.CourseId == course.Id)
                     .ToListAsync();
@@ -332,5 +323,3 @@ namespace Practika2.Views
         }
     }
 }
-
-

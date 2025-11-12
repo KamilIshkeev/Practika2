@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Practika2.Data;
@@ -10,18 +9,15 @@ namespace Practika2.Views
 {
     public partial class CreateCourseView : Window
     {
-        private readonly EduTrackContext _context;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly AuthService _authService;
-        private readonly CourseService _courseService;
         private readonly Course? _existingCourse;
 
-        public CreateCourseView(EduTrackContext context, AuthService authService, 
-                               CourseService courseService, Course? existingCourse = null)
+        public CreateCourseView(Func<EduTrackContext> contextFactory, AuthService authService, Course? existingCourse = null)
         {
             InitializeComponent();
-            _context = context;
+            _contextFactory = contextFactory;
             _authService = authService;
-            _courseService = courseService;
             _existingCourse = existingCourse;
             
             if (_existingCourse != null)
@@ -50,6 +46,9 @@ namespace Practika2.Views
         {
             if (_authService.CurrentUser == null) return;
             
+            using var context = _contextFactory();
+            var courseService = new CourseService(context);
+
             var course = _existingCourse ?? new Course();
             course.Title = TitleTextBox.Text ?? "";
             course.Description = DescriptionTextBox.Text ?? "";
@@ -66,20 +65,15 @@ namespace Practika2.Views
             {
                 course.CreatedById = _authService.CurrentUser.Id;
                 course.CreatedAt = DateTime.UtcNow;
-                await _courseService.CreateCourseAsync(course);
+                await courseService.CreateCourseAsync(course);
             }
             else
             {
                 course.UpdatedAt = DateTime.UtcNow;
-                await _courseService.UpdateCourseAsync(course);
+                await courseService.UpdateCourseAsync(course);
             }
             
             this.Close();
         }
     }
 }
-
-
-
-
-

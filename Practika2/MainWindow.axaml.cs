@@ -1,10 +1,7 @@
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Practika2.Data;
-using Practika2.Models;
 using Practika2.Services;
 using Practika2.Views;
 
@@ -12,18 +9,14 @@ namespace Practika2
 {
     public partial class MainWindow : Window
     {
-        private readonly EduTrackContext _context;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly AuthService _authService;
-        private readonly CourseService _courseService;
-        private readonly EnrollmentService _enrollmentService;
 
-        public MainWindow(EduTrackContext context, AuthService authService)
+        public MainWindow(AuthService authService)
         {
             InitializeComponent();
-            _context = context;
+            _contextFactory = () => new EduTrackContext();
             _authService = authService;
-            _courseService = new CourseService(_context);
-            _enrollmentService = new EnrollmentService(_context);
             
             InitializeWindow();
             SetupEvents();
@@ -36,9 +29,7 @@ namespace Practika2
             {
                 UserNameTextBlock.Text = $"{_authService.CurrentUser.FirstName} {_authService.CurrentUser.LastName} ({_authService.CurrentUser.Role})";
                 
-                // Показать панель администратора только для администраторов
                 AdminPanelButton.IsVisible = _authService.IsAdmin;
-                // Показать панель преподавателя только для преподавателей
                 TeacherPanelButton.IsVisible = _authService.IsTeacher;
             }
         }
@@ -56,14 +47,16 @@ namespace Practika2
 
         private void LoadProfile()
         {
-            var profileView = new ProfileView(_context, _authService);
+            var profileView = new ProfileView(_contextFactory, _authService);
             ContentArea.Content = profileView;
         }
 
         private async void LoadCourses()
         {
-            var courses = await _courseService.GetCoursesAsync(publishedOnly: true);
-            var coursesView = new CoursesView(_context, _authService, _courseService, _enrollmentService);
+            using var context = _contextFactory();
+            var courseService = new CourseService(context);
+            var courses = await courseService.GetCoursesAsync(publishedOnly: true);
+            var coursesView = new CoursesView(_contextFactory, _authService);
             coursesView.LoadCourses(courses);
             ContentArea.Content = coursesView;
         }
@@ -72,15 +65,18 @@ namespace Practika2
         {
             if (_authService.CurrentUser == null) return;
             
-            var enrollments = await _enrollmentService.GetStudentEnrollmentsAsync(_authService.CurrentUser.Id);
-            var myCoursesView = new MyCoursesView(_context, _authService, _courseService, _enrollmentService);
+            using var context = _contextFactory();
+            var enrollmentService = new EnrollmentService(context);
+            var enrollments = await enrollmentService.GetStudentEnrollmentsAsync(_authService.CurrentUser.Id);
+
+            var myCoursesView = new MyCoursesView(_contextFactory, _authService);
             myCoursesView.LoadEnrollments(enrollments);
             ContentArea.Content = myCoursesView;
         }
 
         private void LoadAssignments()
         {
-            var assignmentsView = new AssignmentsView(_context, _authService);
+            var assignmentsView = new AssignmentsView(_contextFactory, _authService);
             ContentArea.Content = assignmentsView;
         }
 
@@ -88,7 +84,7 @@ namespace Practika2
         {
             if (!_authService.IsAdmin) return;
             
-            var adminView = new AdminPanelView(_context, _authService, _courseService);
+            var adminView = new AdminPanelView(_contextFactory, _authService);
             ContentArea.Content = adminView;
         }
 
@@ -96,7 +92,7 @@ namespace Practika2
         {
             if (!_authService.IsTeacher) return;
             
-            var teacherView = new TeacherPanelView(_context, _authService);
+            var teacherView = new TeacherPanelView(_contextFactory, _authService);
             ContentArea.Content = teacherView;
         }
 

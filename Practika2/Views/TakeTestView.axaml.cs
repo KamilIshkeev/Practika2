@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Microsoft.EntityFrameworkCore;
 using Practika2.Data;
 using Practika2.Models;
 using Practika2.Services;
@@ -13,21 +11,19 @@ namespace Practika2.Views
 {
     public partial class TakeTestView : Window
     {
-        private readonly EduTrackContext _context;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly AuthService _authService;
         private readonly Test _test;
         private readonly CourseEnrollment _enrollment;
         private readonly Dictionary<int, List<int>> _answers = new();
-        private readonly TestService _testService;
 
-        public TakeTestView(EduTrackContext context, AuthService authService, Test test, CourseEnrollment enrollment)
+        public TakeTestView(Func<EduTrackContext> contextFactory, AuthService authService, Test test, CourseEnrollment enrollment)
         {
             InitializeComponent();
-            _context = context;
+            _contextFactory = contextFactory;
             _authService = authService;
             _test = test;
             _enrollment = enrollment;
-            _testService = new TestService(_context);
             
             LoadTest();
         }
@@ -84,7 +80,6 @@ namespace Practika2.Views
             var submitButton = new Button 
             { 
                 Content = "Отправить ответы",
-                
             };
             submitButton.Classes.Add("primary");
             submitButton.Click += OnSubmitClick;
@@ -95,7 +90,10 @@ namespace Practika2.Views
         {
             if (_authService.CurrentUser == null) return;
             
-            var submission = await _testService.SubmitAsync(_test.Id, _authService.CurrentUser.Id, _answers);
+            using var context = _contextFactory();
+            var testService = new TestService(context);
+
+            var submission = await testService.SubmitAsync(_test.Id, _authService.CurrentUser.Id, _answers);
             
             var resultWindow = new Window
             {
@@ -127,5 +125,3 @@ namespace Practika2.Views
         }
     }
 }
-
-

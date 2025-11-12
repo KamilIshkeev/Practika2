@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Layout;
-using Avalonia.Media;
 using Microsoft.EntityFrameworkCore;
 using Practika2.Data;
 using Practika2.Models;
@@ -15,21 +12,15 @@ namespace Practika2.Views
 {
     public partial class CourseDetailsView : Window
     {
-        private readonly EduTrackContext _context;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly AuthService _authService;
-        private readonly CourseService _courseService;
-        private readonly EnrollmentService _enrollmentService;
         private readonly Course _course;
 
-        public CourseDetailsView(EduTrackContext context, AuthService authService, 
-                                CourseService courseService, EnrollmentService enrollmentService, 
-                                Course course)
+        public CourseDetailsView(Func<EduTrackContext> contextFactory, AuthService authService, Course course)
         {
             InitializeComponent();
-            _context = context;
+            _contextFactory = contextFactory;
             _authService = authService;
-            _courseService = courseService;
-            _enrollmentService = enrollmentService;
             _course = course;
             
             LoadCourseDetails();
@@ -49,7 +40,8 @@ namespace Practika2.Views
 
         private async Task LoadReviews()
         {
-            var reviews = await _context.Reviews
+            using var context = _contextFactory();
+            var reviews = await context.Reviews
                 .Include(r => r.User)
                 .Where(r => r.CourseId == _course.Id)
                 .OrderByDescending(r => r.CreatedAt)
@@ -62,7 +54,9 @@ namespace Practika2.Views
         {
             if (_authService.CurrentUser == null) return;
             
-            var success = await _enrollmentService.EnrollStudentAsync(_course.Id, _authService.CurrentUser.Id);
+            using var context = _contextFactory();
+            var enrollmentService = new EnrollmentService(context);
+            var success = await enrollmentService.EnrollStudentAsync(_course.Id, _authService.CurrentUser.Id);
             
             if (success)
             {
@@ -83,12 +77,14 @@ namespace Practika2.Views
         {
             if (_authService.CurrentUser == null) return;
             
-            var window = new CreateReviewView(_context, _authService, _course);
+            var window = new CreateReviewView(_contextFactory, _authService, _course);
             window.Show();
             window.Closed += async (s, args) => 
             {
                 await LoadReviews();
-                await _courseService.UpdateCourseRatingAsync(_course.Id);
+                using var context = _contextFactory();
+                var courseService = new CourseService(context);
+                await courseService.UpdateCourseRatingAsync(_course.Id);
                 LoadCourseDetails();
             };
         }

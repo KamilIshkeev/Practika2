@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Microsoft.EntityFrameworkCore;
@@ -14,22 +12,24 @@ namespace Practika2.Views
 {
     public partial class CreateTestView : Window
     {
-        private readonly EduTrackContext _context;
+        private readonly Func<EduTrackContext> _contextFactory;
         private readonly AuthService _authService;
         private readonly int _courseId;
         private readonly Test? _existingTest;
         private readonly ObservableCollection<TestQuestion> _questions = new();
 
-        public CreateTestView(EduTrackContext context, AuthService authService, int courseId, Test? existingTest = null)
+        public CreateTestView(Func<EduTrackContext> contextFactory, AuthService authService, int courseId, Test? existingTest = null)
         {
             InitializeComponent();
-            _context = context;
+            _contextFactory = contextFactory;
             _authService = authService;
             _courseId = courseId;
             _existingTest = existingTest;
             
-            LoadLessons();
+            DataContext = this;
             QuestionsItemsControl.ItemsSource = _questions;
+
+            LoadLessons();
             
             if (_existingTest != null)
             {
@@ -39,13 +39,17 @@ namespace Practika2.Views
 
         private async void LoadLessons()
         {
-            var lessons = await _context.Lessons
+            using var context = _contextFactory();
+            var lessons = await context.Lessons
                 .Include(l => l.Module)
                 .Where(l => l.Module.CourseId == _courseId)
                 .ToListAsync();
             
             LessonComboBox.ItemsSource = lessons;
-            LessonComboBox.SelectedItem = _existingTest?.Lesson;
+            if (_existingTest != null)
+            {
+                LessonComboBox.SelectedItem = lessons.FirstOrDefault(l => l.Id == _existingTest.LessonId);
+            }
         }
 
         private void LoadTestData()
@@ -56,6 +60,17 @@ namespace Practika2.Views
             DescriptionTextBox.Text = _existingTest.Description;
             TimeLimitTextBox.Text = _existingTest.TimeLimitMinutes.ToString();
             PassingScoreTextBox.Text = _existingTest.PassingScorePercent.ToString();
+
+            using var context = _contextFactory();
+            var questions = context.TestQuestions
+                .Include(q => q.Options)
+                .Where(q => q.TestId == _existingTest.Id)
+                .ToList();
+
+            foreach (var q in questions)
+            {
+                _questions.Add(q);
+            }
         }
 
         private void OnAddQuestionClick(object? sender, RoutedEventArgs e)
@@ -101,6 +116,9 @@ namespace Practika2.Views
         {
             if (LessonComboBox.SelectedItem is not Lesson lesson) return;
             
+            using var context = _contextFactory();
+            var testService = new TestService(context);
+
             var test = _existingTest ?? new Test();
             test.Title = TitleTextBox.Text ?? "";
             test.Description = DescriptionTextBox.Text ?? "";
@@ -108,33 +126,9 @@ namespace Practika2.Views
             test.PassingScorePercent = int.TryParse(PassingScoreTextBox.Text, out var passingScore) ? passingScore : 60;
             test.LessonId = lesson.Id;
             
-            if (_existingTest == null)
-            {
-                _context.Tests.Add(test);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                await _context.SaveChangesAsync();
-            }
+            await testService.SaveTestWithQuestionsAsync(test, _questions.ToList());
             
-            // Добавить вопросы
-            foreach (var question in _questions)
-            {
-                question.TestId = test.Id;
-                _context.TestQuestions.Add(question);
-                foreach (var option in question.Options)
-                {
-                    option.QuestionId = question.Id;
-                    _context.TestAnswerOptions.Add(option);
-                }
-            }
-            
-            await _context.SaveChangesAsync();
             this.Close();
         }
     }
 }
-
-
-
