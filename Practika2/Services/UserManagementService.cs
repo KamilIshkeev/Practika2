@@ -43,8 +43,9 @@ namespace Practika2.Services
 				await _context.SaveChangesAsync();
 			}
 		}
-		
-		public async Task RemoveTeacherFromCourseAsync(int courseId, int teacherId)
+        
+
+        public async Task RemoveTeacherFromCourseAsync(int courseId, int teacherId)
 		{
 			var entity = await _context.CourseTeachers
 				.FirstOrDefaultAsync(ct => ct.CourseId == courseId && ct.TeacherId == teacherId);

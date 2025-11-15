@@ -83,7 +83,7 @@ namespace Practika2.Views
             
             if (success)
             {
-                var mainWindow = new MainWindow(_context, _authService);
+                var mainWindow = new MainWindow(_authService);
                 mainWindow.Show();
                 this.Close();
             }

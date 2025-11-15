@@ -1,7 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
-             x:Class="Practika2.Views.AdminPanelView">
+             xmlns:views="using:Practika2.Views" 
+             x:Class="Practika2.Views.AdminPanelView"
+             x:DataType="views:AdminPanelView">
     
     <TabControl>
         <TabItem Header="Управление курсами">
@@ -40,12 +42,19 @@
                                         </StackPanel>
                                         <TextBlock Text="Преподаватели:" FontWeight="Bold" Margin="0,8,0,4"/>
                                         <ItemsControl ItemsSource="{Binding Teachers}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Teacher.Username}" Foreground="#546E7A"/>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+    <ItemsControl.ItemTemplate>
+        <DataTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Teacher.Username}" Foreground="#546E7A"/>
+                <Button Content="Снять"
+                        CommandParameter="{Binding}"
+                        Click="OnRemoveTeacherFromCourseClick"
+                        Classes="small"
+                        FontSize="10" Height="24"/>
+            </StackPanel>
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+</ItemsControl> 
                                     </StackPanel>
                                     
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
@@ -65,7 +74,7 @@
         </TabItem>
         
         <TabItem Header="Управление пользователями">
-			<Grid Margin="16" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,*">
+			<Grid Margin="16" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,*" >
 				<TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Управление пользователями" Classes="subheading"/>
 				
 				<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="8" Margin="0,8,0,8">
@@ -73,7 +82,10 @@
 					<Button Content="➕ Добавить пользователя" Click="OnAddUserClick"/>
 				</StackPanel>
 				
-				<DataGrid Grid.Row="2" Grid.ColumnSpan="2" x:Name="UsersGrid" AutoGenerateColumns="False" IsReadOnly="True">
+				<DataGrid Grid.Row="2" Grid.ColumnSpan="2" x:Name="UsersGrid"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          SelectionChanged="OnUserSelected">
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
 						<DataGridTextColumn Header="Логин" Binding="{Binding Username}" Width="*"/>
@@ -104,6 +116,14 @@
 			</Grid>
         </TabItem>
 		
+        <TabItem Header="Просмотр активности">
+    <ScrollViewer Margin="16">
+        <StackPanel x:Name="UserActivityPanel" Spacing="16">
+            <TextBlock Text="Выберите пользователя в таблице выше" Foreground="#9E9E9E" FontSize="16"/>
+        </StackPanel>
+    </ScrollViewer>
+</TabItem>
+
 		<TabItem Header="Аналитика">
 			<ScrollViewer Margin="16">
 				<StackPanel Spacing="16">
@@ -111,16 +131,12 @@
 					<Button Content="🔄 Пересчитать" Click="OnCalculateAnalyticsClick"/>
 
 					<TextBlock Text="Доходы по курсам" Classes="subheading"/>
-					<lvc:CartesianChart Series="{Binding RevenueSeries}" Height="300"/>
+					<lvc:CartesianChart x:Name="RevenueChart" Series="{Binding RevenueSeries}" Height="300"/>
 
 					<TextBlock Text="Завершения курсов" Classes="subheading"/>
-					<lvc:CartesianChart Series="{Binding CompletionsSeries}" Height="300"/>
+					<lvc:CartesianChart x:Name="CompletionsChart" Series="{Binding CompletionsSeries}" Height="300"/>
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
     </TabControl>
 </UserControl>
-
-
-
-

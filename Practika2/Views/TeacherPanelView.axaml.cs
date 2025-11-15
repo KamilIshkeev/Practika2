@@ -24,7 +24,7 @@ namespace Practika2.Views
             
             LoadInitialData();
         }
-
+        
         private async void LoadInitialData()
         {
             await LoadTeacherCourses();
@@ -126,7 +126,7 @@ namespace Practika2.Views
         {
             if (CourseSelectorComboBox.SelectedItem is Course course)
             {
-                var window = new CreateLessonView(_contextFactory, _authService, course.Id);
+                var window = new CreateLessonView(_contextFactory(), _authService, course.Id);
                 window.Show();
                 window.Closed += (s, args) => LoadLessons(course.Id);
             }
@@ -136,7 +136,7 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is Lesson lesson)
             {
-                var window = new CreateLessonView(_contextFactory, _authService, lesson.Module.CourseId, lesson);
+                var window = new CreateLessonView(_contextFactory(), _authService, lesson.Module.CourseId, lesson);
                 window.Show();
                 window.Closed += (s, args) => 
                 {
@@ -163,7 +163,7 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is Course course)
             {
-                var window = new ManageCourseModulesView(_contextFactory, _authService, course);
+                var window = new ManageCourseModulesView(_contextFactory(), _authService, course);
                 window.Show();
             }
         }
@@ -278,7 +278,7 @@ namespace Practika2.Views
 
         private void OnCreateWebinarClick(object? sender, RoutedEventArgs e)
         {
-            var window = new CreateWebinarView(_contextFactory, _authService);
+            var window = new CreateWebinarView(_contextFactory(), _authService);
             window.Show();
             window.Closed += async (s, args) => await LoadWebinars();
         }
@@ -287,14 +287,14 @@ namespace Practika2.Views
         {
             if (sender is Button button && button.CommandParameter is DiscussionThread thread)
             {
-                var window = new DiscussionView(_contextFactory, _authService, thread);
+                var window = new DiscussionView(_contextFactory(), _authService, thread);
                 window.Show();
             }
         }
 
         private void OnCreateAnnouncementClick(object? sender, RoutedEventArgs e)
         {
-            var window = new CreateAnnouncementView(_contextFactory, _authService);
+            var window = new CreateAnnouncementView(_contextFactory(), _authService);
             window.Show();
             window.Closed += async (s, args) => await LoadAnnouncements();
         }

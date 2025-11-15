@@ -76,7 +76,7 @@ namespace Practika2
 
         private void LoadAssignments()
         {
-            var assignmentsView = new AssignmentsView(_contextFactory, _authService);
+            var assignmentsView = new AssignmentsView(_contextFactory(), _authService);
             ContentArea.Content = assignmentsView;
         }
 

@@ -3,11 +3,13 @@
              xmlns:converters="using:Practika2.Converters"
              x:Class="Practika2.App"
              RequestedThemeVariant="Light">
+    
+    <Application.Styles>
+        <StyleInclude Source="avares://Practika2/Styles/AppStyles.axaml" />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+    <FluentTheme />
+    </Application.Styles>
     <Application.Resources>
         <converters:NotNullToBoolConverter x:Key="NotNullToBoolConverter"/>
     </Application.Resources>
-    <Application.Styles>
-        <FluentTheme />
-        <StyleInclude Source="avares://Practika2/Styles/AppStyles.axaml" />
-    </Application.Styles>
 </Application>
